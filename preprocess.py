@@ -5,7 +5,7 @@ import h5py
 import numpy as np
 from pathlib import Path
 from tqdm import tqdm
-from typing import List, Optional, Union
+from typing import List, Tuple, Optional, Union
 import MDAnalysis
 from MDAnalysis.analysis import rms, align
 from mdtools.writers import write_rmsd, write_point_cloud
@@ -30,9 +30,9 @@ def write_h5(
     point_clouds : np.ndarray
         XYZ coordinate data in the shape: (N, 3, num_residues).
     """
-    with h5py.File(save_file, "w", swmr=False) as h5_file:
-        write_rmsd(h5_file, rmsds)
-        write_point_cloud(h5_file, point_clouds)
+    with h5py.File(save_file, "w") as f:
+        write_rmsd(f, rmsds)
+        write_point_cloud(f, point_clouds)
 
 
 def traj_to_dset(
@@ -88,7 +88,7 @@ def traj_to_dset(
 
     # Load simulation and reference structures
     sim = MDAnalysis.Universe(str(topology), str(traj_file))
-    ref = MDAnalysis.Universe(str(ref_topology))
+    ref = MDAnalysis.Universe(str(ref_topology), str(traj_file))
 
     if verbose:
         print("Traj length: ", len(sim.trajectory))
@@ -101,14 +101,15 @@ def traj_to_dset(
 
     # Atom selection for reference
     atoms = sim.select_atoms(selection)
-    # Get atomic coordinates of reference atoms
+    # Get atomic coordinates of reference atoms (use first frame)
     ref_positions = ref.select_atoms(selection).positions.copy()
 
-    rmsds, point_clouds = [], [], [], [], [], []
+    rmsds, point_clouds = [], []
 
     iterable = enumerate(sim.trajectory[::skip_every])
     if verbose:
         iterable = tqdm(iterable)
+        print("Iterating over trajectory")
 
     for i, _ in iterable:
 
@@ -126,6 +127,8 @@ def traj_to_dset(
     point_clouds = np.transpose(point_clouds, [0, 2, 1])
 
     if save_file:
+        if verbose:
+            print("Writing HDF5 file")
         write_h5(save_file, rmsds, point_clouds)
 
     if verbose:
@@ -135,10 +138,10 @@ def traj_to_dset(
 
 if __name__ == "__main__":
     traj_to_dset(
-        topology="TODO",
-        ref_topology="TODO",
-        traj_file="TODO",
-        save_file="TODO",
+        topology="/homes/abrace/data/spike/Longhorn-2021/spike_WE_renumbered.psf",
+        ref_topology="/homes/abrace/data/spike/Longhorn-2021/spike_WE_renumbered.psf",
+        traj_file="/homes/abrace/data/spike/Longhorn-2021/spike_WE.dcd",
+        save_file="/homes/abrace/data/spike/Longhorn-2021/spike_WE_AAE.h5",
         selection="protein and name CA",
         skip_every=1,
         verbose=True,
