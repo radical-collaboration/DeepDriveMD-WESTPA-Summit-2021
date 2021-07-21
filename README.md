@@ -21,5 +21,12 @@ conda activate /scratch/06079/tg853783/ddmd/envs/ddmd
 
 To reproduce the creation of this environment please see: `env_recipe.txt`
 
+### Radical EnTK
+Environment variables can be configured by running: 
+```
+source ~/.radical/auth
+```
+For help with configuring this file, please reach out to our team by posting an issue in the [DeepDriveMD](https://github.com/DeepDriveMD/DeepDriveMD-pipeline) repository.
+
 # Source Code
 The source code, including that of [DeepDriveMD](https://github.com/DeepDriveMD/DeepDriveMD-pipeline) and this repository, can be found here: `/scratch/06079/tg853783/ddmd/src/`
