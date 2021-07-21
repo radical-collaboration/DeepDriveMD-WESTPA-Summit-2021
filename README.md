@@ -10,6 +10,25 @@ https://amarolab.ucsd.edu/files/covid19/TRAJECTORIES_continuous_spike_opening_WE
 
 We store the data on Longhorn here: `/scratch/06079/tg853783/ddmd/data`
 
+### Download instructions
+Make a `data` directory, `cd` into it and follow these steps:
+```
+curl https://amarolab.ucsd.edu/files/covid19/TRAJECTORIES_continuous_spike_opening_WE_chong_and_amarolab.tar.gz --output TRAJECTORIES_continuous_spike_opening_WE_chong_and_amarolab.tar.gz
+
+tar -xvf TRAJECTORIES_continuous_spike_opening_WE_chong_and_amarolab.tar.gz
+
+rm TRAJECTORIES_continuous_spike_opening_WE_chong_and_amarolab.tar.gz
+```
+
+The size of this dataset is:
+```
+$ du -h *
+4.0K	README.txt
+1.3G	spike_WE.dcd
+26M	spike_WE.prmtop
+5.9M	spike_WE_renumbered.psf
+```
+
 # Environments
 The conda environment for running DeepDriveMD and the AAE training in offline mode can be found here: `/scratch/06079/tg853783/ddmd/envs/ddmd`
 
