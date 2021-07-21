@@ -29,6 +29,16 @@ $ du -h *
 5.9M	spike_WE_renumbered.psf
 ```
 
+### Larger dataset
+A larger dataset containing 130880 examples can be found here: `/scratch/06079/tg853783/ddmd/data/spike-all.h5`
+
+The size of this dataset is:
+```
+$ du -h spike-all.h5
+23G	spike-all.h5
+```
+
+
 # Environments
 The conda environment for running DeepDriveMD and the AAE training in offline mode can be found here: `/scratch/06079/tg853783/ddmd/envs/ddmd`
 
