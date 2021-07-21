@@ -19,7 +19,7 @@ module load conda
 conda activate /scratch/06079/tg853783/ddmd/envs/ddmd
 ```
 
-To reproduce the creation of this environment please see: TODO
+To reproduce the creation of this environment please see: `env_recipe.txt`
 
 # Source Code
 The source code, including that of [DeepDriveMD](https://github.com/DeepDriveMD/DeepDriveMD-pipeline) and this repository, can be found here: `/scratch/06079/tg853783/ddmd/src/`
