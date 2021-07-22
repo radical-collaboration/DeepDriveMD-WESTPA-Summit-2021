@@ -59,7 +59,7 @@ def preprocess(
     selection: str = "protein and name CA",
     skip_every: int = 1,
     verbose: bool = False,
-) -> Tuple[List[float], List[np.ndarray]]:
+) -> Tuple[List[float], List[np.ndarray], float]:
     r"""
     Implementation for generating machine learning datasets
     from raw molecular dynamics trajectory data. This function
@@ -97,6 +97,8 @@ def preprocess(
         to be written to HDF5, where N is the number of
         frames in the trajectory, and D is the number of
         atoms in :obj:`selection`.
+    float
+        The runtime of the function in seconds.
     """
 
     # start timer
@@ -147,10 +149,12 @@ def preprocess(
             print("Writing HDF5 file")
         write_h5(save_file, rmsds, point_clouds)
 
-    if verbose:
-        print(f"Duration {time.time() - start_time}s")
 
-    return rmsds, point_clouds
+    elapsed = time.time() - start_time
+    if verbose:
+        print(f"Duration {elapsed}s")
+
+    return rmsds, point_clouds, elapsed
 
 
 def _worker(kwargs):
@@ -166,7 +170,7 @@ def parallel_preprocess(
     concatenated_h5: PathLike,
     selection: str = "protein and name CA",
     num_workers: int = 10,
-):
+) -> List[float]:
 
     kwargs = [
         {
@@ -182,32 +186,42 @@ def parallel_preprocess(
         )
     ]
 
-    rmsds, point_clouds = [], []
+    rmsds, point_clouds, run_times = [], [], []
 
     with ProcessPoolExecutor(max_workers=num_workers) as executor:
-        for rmsd, point_cloud in tqdm(executor.map(_worker, kwargs)):
+        for rmsd, point_cloud, run_time in tqdm(executor.map(_worker, kwargs)):
             rmsds.extend(rmsd)
             point_clouds.append(point_cloud)
+            run_times.append(run_time)
 
-    print(len(rmsds))
     point_clouds = np.concatenate(point_clouds)
-    print(point_clouds.shape)
 
     write_h5(concatenated_h5, rmsds, point_clouds)
-
+    
+    return run_times
 
 if __name__ == "__main__":
 
     start = time.time()
 
-    ref_topology = "/scratch/06079/tg853783/ddmd/data/raw/spike_WE.pdb"
-    traj_files = list(Path("/scratch/06079/tg853783/ddmd/data/raw").glob("*.dcd"))
+    import shutil
+
+    # Stage the data on node local ssd
+    stage_dir = Path("/tmp/raw")
+    raw_data_dir = "/scratch/06079/tg853783/ddmd/data/raw"
+    if not stage_dir.exists():
+        shutil.copytree(raw_data_dir, stage_dir)
+
+
+    preprocessed_dir = Path("/scratch/06079/tg853783/ddmd/data/preprocessed")
+    ref_topology = stage_dir / "spike_WE.pdb"
+    traj_files = list(stage_dir.glob("*.dcd"))
     topology_files = [ref_topology] * len(traj_files)  # Use same PDB for each traj
-    save_files = [p.with_suffix(".h5") for p in traj_files]
+    save_files = [preprocessed_dir / p.with_suffix(".h5").name for p in traj_files]
+    concatenated_h5 = preprocessed_dir / "spike-all-AAE.h5"
 
-    concatenated_h5 = "/scratch/06079/tg853783/ddmd/data/spike-all-test.h5"
 
-    parallel_preprocess(
+    run_times = parallel_preprocess(
         topology_files,
         traj_files,
         ref_topology,
@@ -218,6 +232,9 @@ if __name__ == "__main__":
     )
 
     print("Elapsed time:", time.time() - start)
+    print(f"Preprocess runtime: {np.mean(run_times)} +- {np.std(run_times)}")     
+    print(run_times)
+
 
     # Single file preprocessing
     # preprocess(
