@@ -9,6 +9,7 @@ from typing import List, Tuple, Optional, Union
 import MDAnalysis
 from MDAnalysis.analysis import rms, align
 from mdtools.writers import write_rmsd, write_point_cloud
+from concurrent.futures import ProcessPoolExecutor
 
 PathLike = Union[str, Path]
 
@@ -35,7 +36,7 @@ def write_h5(
         write_point_cloud(f, point_clouds)
 
 
-def traj_to_dset(
+def preprocess(
     topology: PathLike,
     ref_topology: PathLike,
     traj_file: PathLike,
@@ -48,8 +49,8 @@ def traj_to_dset(
     Implementation for generating machine learning datasets
     from raw molecular dynamics trajectory data. This function
     uses MDAnalysis to load the trajectory file and given a
-    custom atom selection computes RMSD to reference state, 
-    and the point cloud (xyz coordinates) of each frame in the 
+    custom atom selection computes RMSD to reference state,
+    and the point cloud (xyz coordinates) of each frame in the
     trajectory.
 
     Parameters
@@ -88,7 +89,7 @@ def traj_to_dset(
 
     # Load simulation and reference structures
     sim = MDAnalysis.Universe(str(topology), str(traj_file))
-    ref = MDAnalysis.Universe(str(ref_topology), str(traj_file))
+    ref = MDAnalysis.Universe(str(ref_topology))
 
     if verbose:
         print("Traj length: ", len(sim.trajectory))
@@ -136,13 +137,76 @@ def traj_to_dset(
 
     return rmsds, point_clouds
 
+
+def _worker(kwargs):
+    """Helper function for parallel data preprocessing."""
+    return preprocess(**kwargs)
+
+
+def parallel_preprocess(
+    topology_files: List[PathLike],
+    traj_files: List[PathLike],
+    ref_topology: PathLike,
+    save_files: List[PathLike],
+    concatenated_h5: PathLike,
+    selection: str = "protein and name CA",
+    num_workers: int = 10,
+):
+
+    kwargs = [
+        {
+            "topology": topology,
+            "ref_topology": ref_topology,
+            "traj_file": traj_file,
+            "save_file": save_file,
+            "selection": selection,
+            "verbose": not bool(i % num_workers),
+        }
+        for i, (topology, traj_file, save_file) in enumerate(
+            zip(topology_files, traj_files, save_files)
+        )
+    ]
+
+    rmsds, point_clouds = [], []
+
+    with ProcessPoolExecutor(max_workers=num_workers) as executor:
+        for rmsd, point_cloud in tqdm(executor.map(_worker, kwargs)):
+            rmsds.extend(rmsd)
+            point_clouds.append(point_cloud)
+
+    print(len(rmsds))
+    point_clouds = np.concatenate(point_clouds)
+    print(point_clouds.shape)
+
+    write_h5(concatenated_h5, rmsds, point_clouds)
+
+
 if __name__ == "__main__":
-    traj_to_dset(
-        topology="/homes/abrace/data/spike/Longhorn-2021/spike_WE_renumbered.psf",
-        ref_topology="/homes/abrace/data/spike/Longhorn-2021/spike_WE_renumbered.psf",
-        traj_file="/homes/abrace/data/spike/Longhorn-2021/spike_WE.dcd",
-        save_file="/homes/abrace/data/spike/Longhorn-2021/spike_WE_AAE.h5",
+
+    ref_topology = "/scratch/06079/tg853783/ddmd/data/raw/spike_WE.pdb"
+    traj_files = list(Path("/scratch/06079/tg853783/ddmd/data/raw").glob("*.dcd"))
+    topology_files = [ref_topology] * len(traj_files)  # Use same PDB for each traj
+    save_files = [p.with_suffix(".h5") for p in traj_files]
+
+    concatenated_h5 = "/scratch/06079/tg853783/ddmd/data/spike-all-test.h5"
+
+    parallel_preprocess(
+        topology_files,
+        traj_files,
+        ref_topology,
+        save_files,
+        concatenated_h5,
         selection="protein and name CA",
-        skip_every=1,
-        verbose=True,
+        num_workers=len(traj_files),
     )
+
+    # Single file preprocessing
+    # preprocess(
+    #     topology="/homes/abrace/data/spike/Longhorn-2021/spike_WE_renumbered.psf",
+    #     ref_topology="/homes/abrace/data/spike/Longhorn-2021/spike_WE_renumbered.psf",
+    #     traj_file="/homes/abrace/data/spike/Longhorn-2021/spike_WE.dcd",
+    #     save_file="/homes/abrace/data/spike/Longhorn-2021/spike_WE_AAE.h5",
+    #     selection="protein and name CA",
+    #     skip_every=1,
+    #     verbose=True,
+    # )
