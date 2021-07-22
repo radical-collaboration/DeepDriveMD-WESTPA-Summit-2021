@@ -1,9 +1,7 @@
 import os
 import argparse
 from pathlib import Path
-from typing import Optional
 from aae_config import AAEModelConfig
-from deepdrivemd.selection.latest.select_model import get_model_path
 
 # torch stuff
 import torch
