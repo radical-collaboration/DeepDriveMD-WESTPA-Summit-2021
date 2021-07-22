@@ -8,10 +8,25 @@ from tqdm import tqdm
 from typing import List, Tuple, Optional, Union
 import MDAnalysis
 from MDAnalysis.analysis import rms, align
-from mdtools.writers import write_rmsd, write_point_cloud
 from concurrent.futures import ProcessPoolExecutor
 
 PathLike = Union[str, Path]
+
+
+def write_point_cloud(h5_file: h5py.File, point_cloud: np.ndarray):
+    h5_file.create_dataset(
+        "point_cloud",
+        data=point_cloud,
+        dtype="float32",
+        fletcher32=True,
+        chunks=(1,) + point_cloud.shape[1:],
+    )
+
+
+def write_rmsd(h5_file: h5py.File, rmsd):
+    h5_file.create_dataset(
+        "rmsd", data=rmsd, dtype="float16", fletcher32=True, chunks=(1,)
+    )
 
 
 def write_h5(
