@@ -43,7 +43,8 @@ noise_mu: 0.0
 noise_std: 1.0
 lambda_rec: 0.5
 lambda_gp: 10.0
-embed_interval: 1
+embed_interval: 5
+checkpoint_interval: 5
 sample_interval: 20
 num_data_workers: 0
 dataset_location: storage
