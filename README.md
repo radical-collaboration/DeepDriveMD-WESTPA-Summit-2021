@@ -71,6 +71,7 @@ Setup the environment:
 ```
 module load conda
 conda activate /scratch/06079/tg853783/ddmd/envs/pytorch
+export HDF5_USE_FILE_LOCKING='FALSE'
 ```
 
 To generate a new AAE parameter file: `python aae_config.py`. Make sure to update the parameters in this file, which includes a path to the data and output directory. For convenience, we have a working config in this file: `aae_template.yaml`.
