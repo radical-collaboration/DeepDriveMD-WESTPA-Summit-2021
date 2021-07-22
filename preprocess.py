@@ -183,6 +183,8 @@ def parallel_preprocess(
 
 if __name__ == "__main__":
 
+    start = time.time()
+
     ref_topology = "/scratch/06079/tg853783/ddmd/data/raw/spike_WE.pdb"
     traj_files = list(Path("/scratch/06079/tg853783/ddmd/data/raw").glob("*.dcd"))
     topology_files = [ref_topology] * len(traj_files)  # Use same PDB for each traj
@@ -199,6 +201,8 @@ if __name__ == "__main__":
         selection="protein and name CA",
         num_workers=len(traj_files),
     )
+
+    print("Elapsed time:", time.time() - start)
 
     # Single file preprocessing
     # preprocess(
