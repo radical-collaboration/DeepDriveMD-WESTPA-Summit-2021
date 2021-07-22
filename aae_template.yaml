@@ -1,12 +1,12 @@
 data_path: /scratch/06079/tg853783/ddmd/data/spike_WE_AAE.h5 
-output_path: /scratch/06079/tg853783/ddmd/runs/aae_runs/run-0
+output_path: /scratch/06079/tg853783/ddmd/runs/aae_runs/run-1
 init_weights: null
 dataset_name: point_cloud
 rmsd_name: rmsd
 fnc_name: rmsd
 num_points: 3375
 num_features: 0
-epochs: 10
+epochs: 100
 batch_size: 32
 optimizer_name: Adam
 optimizer_lr: 0.0001
@@ -43,8 +43,8 @@ noise_mu: 0.0
 noise_std: 1.0
 lambda_rec: 0.5
 lambda_gp: 10.0
-embed_interval: 5
-checkpoint_interval: 5
-sample_interval: 20
+embed_interval: 10
+checkpoint_interval: 10
+sample_interval: 1
 num_data_workers: 0
 dataset_location: storage
