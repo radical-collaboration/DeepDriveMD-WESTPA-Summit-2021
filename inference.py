@@ -125,3 +125,16 @@ def generate_embeddings(
     embeddings = np.concatenate(embeddings)
 
     return embeddings
+
+
+if __name__ == "__main__":
+
+    embeddings = generate_embeddings(
+        model_cfg_path="./aae_template.yaml",
+        h5_file="/scratch/06079/tg853783/ddmd/data/spike_WE_AAE.h5",
+        model_weights_path="/scratch/06079/tg853783/ddmd/runs/aae_runs/run-1/checkpoint/epoch-100-20210721-203025.pt",
+        inference_batch_size=512,
+        encoder_gpu=0,
+    )
+
+    np.save("/homes/abrace/spike_WE_AAE_embeddings.npy", embeddings)
