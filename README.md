@@ -61,3 +61,18 @@ For help with configuring this file, please reach out to our team by posting an 
 
 # Source Code
 The source code, including that of [DeepDriveMD](https://github.com/DeepDriveMD/DeepDriveMD-pipeline) and this repository, can be found here: `/scratch/06079/tg853783/ddmd/src/`
+
+# Testing Code
+
+### Single GPU test
+First get a dev node for 10 minutes: `idev -m 10 -n 1 -N 1`
+
+Setup the environment:
+```
+module load conda
+conda activate /scratch/06079/tg853783/ddmd/envs/pytorch
+```
+
+To generate a new AAE parameter file: `python aae_config.py`. Make sure to update the parameters in this file, which includes a path to the data and output directory. For convenience, we have a working config in this file: `aae_template.yaml`.
+
+To train the AAE on a single GPU: `python train.py -c aae_template.yaml`
