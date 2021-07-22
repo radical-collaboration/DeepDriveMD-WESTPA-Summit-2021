@@ -29,6 +29,8 @@ $ du -h *
 5.9M	spike_WE_renumbered.psf
 ```
 
+The preprocessed data can be found here: `/scratch/06079/tg853783/ddmd/data/spike_WE_AAE.h5`
+
 ### Larger dataset
 A larger dataset containing 130880 examples can be found here: `/scratch/06079/tg853783/ddmd/data/spike-all.h5`
 
