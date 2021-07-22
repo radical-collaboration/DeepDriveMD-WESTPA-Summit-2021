@@ -137,4 +137,7 @@ if __name__ == "__main__":
         encoder_gpu=0,
     )
 
-    np.save("/homes/abrace/spike_WE_AAE_embeddings.npy", embeddings)
+    np.save(
+        "/scratch/06079/tg853783/ddmd/runs/aae_runs/run-1/spike_WE_AAE_embeddings.npy",
+        embeddings,
+    )
