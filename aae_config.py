@@ -76,6 +76,8 @@ class AAEModelConfig(BaseSettings):
     # Training settings
     # Saves embeddings every embed_interval'th epoch
     embed_interval: int = 1
+    # Saves embeddings every checkpoint_interval'th epoch
+    checkpoint_interval: int = 1
     # For saving and plotting embeddings. Saves len(validation_set) / sample_interval points.
     sample_interval: int = 20
     # Number of data loaders for training

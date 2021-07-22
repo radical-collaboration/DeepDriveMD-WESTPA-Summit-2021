@@ -229,7 +229,9 @@ def main(
     )
 
     checkpoint_callback = CheckpointCallback(
-        out_dir=cfg.output_path.joinpath("checkpoint"), mpi_comm=comm
+        interval=cfg.checkpoint_interval,
+        out_dir=cfg.output_path.joinpath("checkpoint"),
+        mpi_comm=comm,
     )
 
     save_callback = SaveEmbeddingsCallback(
