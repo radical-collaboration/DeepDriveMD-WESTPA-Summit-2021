@@ -2,6 +2,8 @@
 
 import time
 import h5py
+import shutil
+import argparse
 import numpy as np
 from pathlib import Path
 from tqdm import tqdm
@@ -200,27 +202,50 @@ def parallel_preprocess(
     
     return run_times
 
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-i", "--raw", help="Path to directory containing raw data", type=Path, required=True
+    )
+    parser.add_argument(
+        "-o", "--preprocessed", help="Path to directory to write preprocessed data", type=Path, required=True
+    )
+    parser.add_argument(
+        "-n", "--name", help="Name of concatenated output HDF5 file", type=str, required=True
+    )    
+    args = parser.parse_args()
+    return args
+
+
 if __name__ == "__main__":
 
     start = time.time()
 
-    import shutil
+    args = parse_args()
+
+    if not args.raw.exists():
+        raise ValueError(f"raw path does not exist: {args.raw}")
+    if not args.preprocessed.exists():
+        raise ValueError(f"preprocessed path does not exist: {args.preprocessed}")
+    if len(list(args.raw.glob("*.pdb"))) > 1:
+        raise ValueError("Expected a single PDB file in the raw data directory: {args.raw}") 
+    if not args.name.endswith(".h5"):
+        raise ValueError("Name of concatenated HDF5 file must end with '.h5'")
 
     # Stage the data on node local ssd
-    stage_dir = Path("/tmp/raw")
-    raw_data_dir = "/scratch/06079/tg853783/ddmd/data/raw"
+    stage_dir = Path("/tmp") / args.raw.name
     if not stage_dir.exists():
-        shutil.copytree(raw_data_dir, stage_dir)
+        shutil.copytree(args.raw, stage_dir)
 
-
-    preprocessed_dir = Path("/scratch/06079/tg853783/ddmd/data/preprocessed")
-    ref_topology = stage_dir / "spike_WE.pdb"
+    # Glob a single PDB file to use for alignment and RMSD computation
+    ref_topology = next(stage_dir.glob("*.pdb"))
     traj_files = list(stage_dir.glob("*.dcd"))
     topology_files = [ref_topology] * len(traj_files)  # Use same PDB for each traj
-    save_files = [preprocessed_dir / p.with_suffix(".h5").name for p in traj_files]
-    concatenated_h5 = preprocessed_dir / "spike-all-AAE.h5"
+    save_files = [args.preprocessed / p.with_suffix(".h5").name for p in traj_files]
+    concatenated_h5 = args.preprocessed / args.name
 
-
+    # Use a core per traj file. Note: MDAnalysis also uses it's own cores.
     run_times = parallel_preprocess(
         topology_files,
         traj_files,
@@ -231,18 +256,21 @@ if __name__ == "__main__":
         num_workers=len(traj_files),
     )
 
-    print("Elapsed time:", time.time() - start)
-    print(f"Preprocess runtime: {np.mean(run_times)} +- {np.std(run_times)}")     
+    print(f"Elapsed time: {round((time.time() - start), 2)}s")
+    mean_time = round(np.mean(run_times), 2)
+    std_time = round(np.std(run_times), 2)
+    print(f"Preprocessing runtime: {mean_time}s +- {std_time}s")     
     print(run_times)
-
+ 
 
     # Single file preprocessing
     # preprocess(
-    #     topology="/homes/abrace/data/spike/Longhorn-2021/spike_WE_renumbered.psf",
-    #     ref_topology="/homes/abrace/data/spike/Longhorn-2021/spike_WE_renumbered.psf",
-    #     traj_file="/homes/abrace/data/spike/Longhorn-2021/spike_WE.dcd",
-    #     save_file="/homes/abrace/data/spike/Longhorn-2021/spike_WE_AAE.h5",
+    #     topology="/path/to/pdb/file",
+    #     ref_topology="path/to/pdb/file",
+    #     traj_file="/path/to/dcd/file",
+    #     save_file="/path/to/h5/file",
     #     selection="protein and name CA",
     #     skip_every=1,
     #     verbose=True,
     # )
+
