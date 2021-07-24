@@ -17,6 +17,7 @@ conda deactivate
 conda create -p $SCRATCH/conda/pytorch python=3.7
 conda activate $SCRATCH/conda/pytorch
 conda install -y pytorch scikit-learn
+conda install openmpi mpi4py
 #h5py 3.2.1 instead of 2.10.0
 HDF5_INCLUDEDIR=$SCRATCH/conda/pytorch/include pip install h5py==3.2.1
 git clone https://github.com/DeepDriveMD/DeepDriveMD-pipeline.git

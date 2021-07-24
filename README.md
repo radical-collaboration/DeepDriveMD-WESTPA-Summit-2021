@@ -1,45 +1,28 @@
 # DeepDriveMD-Longhorn-2021
 Scripts, configs, results, documentation, and analysis of DeepDriveMD experiments run on Longhorn in 2021
 
-
 Everything related to the experiment is stored here `/scratch/06079/tg853783/ddmd` on Longhorn.
 
 # Data
-We benchmark the Adversarial Autoencoder (AAE) model on the Spike protein simulations from WESTPA which can be downloaded here:
-https://amarolab.ucsd.edu/files/covid19/TRAJECTORIES_continuous_spike_opening_WE_chong_and_amarolab.tar.gz
+We benchmark the Adversarial Autoencoder (AAE) model on the spike protein simulations from WESTPA which 
+we have collected on Longhorn here: `/scratch/06079/tg853783/ddmd/data/raw`
 
-We store the data on Longhorn here: `/scratch/06079/tg853783/ddmd/data`
-
-### Download instructions
-Make a `data` directory, `cd` into it and follow these steps:
+The data is 94GB in total, this includes 1 PDB file and 32 DCD files.
 ```
-curl https://amarolab.ucsd.edu/files/covid19/TRAJECTORIES_continuous_spike_opening_WE_chong_and_amarolab.tar.gz --output TRAJECTORIES_continuous_spike_opening_WE_chong_and_amarolab.tar.gz
-
-tar -xvf TRAJECTORIES_continuous_spike_opening_WE_chong_and_amarolab.tar.gz
-
-rm TRAJECTORIES_continuous_spike_opening_WE_chong_and_amarolab.tar.gz
+$ du -h /scratch/06079/tg853783/ddmd/data/raw/
+94G	/scratch/06079/tg853783/ddmd/data/raw/
 ```
 
-The size of this dataset is:
-```
-$ du -h *
-4.0K	README.txt
-1.3G	spike_WE.dcd
-26M	spike_WE.prmtop
-5.9M	spike_WE_renumbered.psf
-```
+Please reach out to our team by posting an issue in the [DeepDriveMD](https://github.com/DeepDriveMD/DeepDriveMD-pipeline) repository in case you need access to the original dataset.
 
-The preprocessed data can be found here: `/scratch/06079/tg853783/ddmd/data/spike_WE_AAE.h5`
+The prepreprocessed data can be found here: `/scratch/06079/tg853783/ddmd/data/preprocessed/spike-all-AAE.h5` or recomputed with the preprocessing script (see below).
 
-### Larger dataset
-A larger dataset containing 130880 examples can be found here: `/scratch/06079/tg853783/ddmd/data/spike-all.h5`
-
-The size of this dataset is:
+The dataset contains 130880 frames of MD data which can be used to train the AAE:
 ```
-$ du -h spike-all.h5
-23G	spike-all.h5
+h5ls /scratch/06079/tg853783/ddmd/data/preprocessed/spike-all-AAE.h5
+point_cloud              Dataset {130880, 3, 3375}
+rmsd                     Dataset {130880}
 ```
-
 
 # Environments
 The conda environment for running DeepDriveMD and the AAE training in offline mode can be found here: `/scratch/06079/tg853783/ddmd/envs/ddmd`
@@ -62,7 +45,37 @@ For help with configuring this file, please reach out to our team by posting an 
 # Source Code
 The source code, including that of [DeepDriveMD](https://github.com/DeepDriveMD/DeepDriveMD-pipeline) and this repository, can be found here: `/scratch/06079/tg853783/ddmd/src/`
 
-# Testing Code
+# Running the Code
+
+### Preprocessing
+To preprocess the raw spike protein simulation data in `/scratch/06079/tg853783/ddmd/data/raw`,
+run the `preprocess.py` script. This script will copy the raw data to the node's ssd, and then spawn a parallel process 
+for each input trajectory file `*.dcd` which aligns each frame of the simulation to a reference structure and then 
+collects the raw 3D positions of the CA atoms and the root mean squared deviation (for plotting) of each frame with 
+respect to the reference structure. We use the [MDAnalysis](https://www.mdanalysis.org/) package to process the 
+trajectories, which also spawns workers. Thus, this code will utilize all cores on a node at near 100%. Follow these steps 
+to run the code:
+```
+idev -m 15 -n 1 -N 1
+module load conda
+conda activate /scratch/06079/tg853783/ddmd/envs/pytorch.mpi
+export HDF5_USE_FILE_LOCKING='FALSE'
+python preprocess.py --raw /scratch/06079/tg853783/ddmd/data/raw --preprocessed /scratch/06079/tg853783/ddmd/data/preprocessed --name spike-all-AAE.h5
+```
+
+The preprocessing outputs a directory `/scratch/06079/tg853783/ddmd/data/preprocessed` containing
+an `h5` file for each input `dcd` file (with the same basename) as well as a concatenated `h5` file
+found here: `/scratch/06079/tg853783/ddmd/data/preprocessed/spike-all-AAE.h5`
+
+The preprocessing runtime is reported as follows:
+```
+Elapsed time: 746.68s
+Preprocessing runtime: 320.52s +- 212.24s
+```
+Note: The mean and standard deviation times report the times taken to process each of the 32 input
+`dcd` files. The high standard deviation reflects the fact that some files have many more frames than
+others.
+
 
 ### Single GPU Training
 First get a dev node for 20 minutes: `idev -m 20 -n 1 -N 1`
