@@ -8,7 +8,7 @@ max_iteration: 1
 cpus_per_node: 10
 gpus_per_node: 4
 hardware_threads_per_cpu: 4
-experiment_directory: /scratch/06079/tg853783/experiments/1st_run
+experiment_directory: /scratch/06079/tg853783/experiments/bba_ddp_2nodes_training
 node_local_path: null
 molecular_dynamics_stage:
     pre_exec: 
@@ -71,14 +71,16 @@ aggregation_stage:
         output_path: set_by_deepdrivemd
         node_local_path: set_by_deepdrivemd
 machine_learning_stage:
-    pre_exec: []
-    executable: '/scratch/06079/tg853783/ddmd/envs//pytorch/bin/python'
-    arguments: ['/scratch/06079/tg853783/ddmd/src/DeepDriveMD-pipeline/deepdrivemd/models/aae/train.py']
+    pre_exec: ['module purge', 'module load xl git cmake TACC spectrum_mpi autotools xalt conda', 'export IBRUN_TASKS_PER_NODE=4']
+    executable: cat /dev/null; ibrun -n 8 /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/longhorn.sh
+    arguments: 
+    - /scratch/06079/tg853783/ddmd/envs/pytorch.mpi/bin/python
+    - /scratch/06079/tg853783/ddmd/src/DeepDriveMD-pipeline/deepdrivemd/models/aae/train.py
     cpu_reqs:
-        processes: 1
-        process_type: null
+        processes: 4
+        process_type: 'MPI'
         threads_per_process: 1
-        thread_type: null
+        thread_type: 'OpenMP'
     gpu_reqs:
         processes: 1
         process_type: null
@@ -95,8 +97,8 @@ machine_learning_stage:
         init_weights_path: null
         num_points: 28
 model_selection_stage:
-    pre_exec: []
-    executable: '/scratch/06079/tg853783/ddmd/envs/pytorch/bin/python'
+    pre_exec: ['export IBRUN_TASKS_PER_NODE=40']
+    executable: '/scratch/06079/tg853783/ddmd/envs/pytorch.mpi/bin/python'
     arguments: ['/scratch/06079/tg853783/ddmd/src/DeepDriveMD-pipeline/deepdrivemd/selection/latest/select_model.py']
     cpu_reqs:
         processes: 1
@@ -116,7 +118,7 @@ model_selection_stage:
         node_local_path: set_by_deepdrivemd
 agent_stage:
     pre_exec: []
-    executable: '/scratch/06079/tg853783/ddmd/envs/pytorch/bin/python'
+    executable: '/scratch/06079/tg853783/ddmd/envs/pytorch.mpi/bin/python'
     arguments: ['/scratch/06079/tg853783/ddmd/src/DeepDriveMD-pipeline/deepdrivemd/agents/lof/lof.py']
     cpu_reqs:
         processes: 1
