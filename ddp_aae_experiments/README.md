@@ -41,7 +41,7 @@ idev -m 5 -n 1 -N 1
 module load conda
 conda activate /scratch/06079/tg853783/ddmd/envs/pytorch.mpi
 cd /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments
-python generate_loss_curves.py --output_path ./loss_curves.png
+python generate_loss_curves.py
 ```
 
 ![][img/DiscriminatorTrainingLoss.png]
