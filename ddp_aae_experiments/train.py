@@ -281,6 +281,9 @@ def parse_args() -> argparse.Namespace:
         "-c", "--config", help="YAML config file", type=str, required=True
     )
     parser.add_argument(
+        "-o", "--output_path", help="Output directory", type=Path, default=None
+    )
+    parser.add_argument(
         "-E", "--encoder_gpu", help="GPU to place encoder", type=int, default=0
     )
     parser.add_argument(
@@ -302,4 +305,7 @@ if __name__ == "__main__":
 
     args = parse_args()
     cfg = AAEModelConfig.from_yaml(args.config)
+    # Override output path to avoid needing many config files.
+    if args.output_path is not None:
+        cfg.output_path = args.output_path
     main(cfg, args.encoder_gpu, args.generator_gpu, args.decoder_gpu, args.distributed)
