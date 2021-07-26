@@ -44,6 +44,6 @@ cd /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiment
 python generate_loss_curves.py
 ```
 
-![][img/DiscriminatorTrainingLoss.png]
-![][img/ReconstructionTrainingLoss.png]
-![][img/ValidationLoss.png]
+![DiscriminatorTrainingLoss](img/DiscriminatorTrainingLoss.png)
+![ReconstructionTrainingLoss](img/ReconstructionTrainingLoss.png)
+![ValidationLoss](img/ValidationLoss.png)
