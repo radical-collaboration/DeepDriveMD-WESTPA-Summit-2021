@@ -39,7 +39,7 @@ We report training benchmark results in the following table:
 
 Note: The code reports Seconds/batch and we use this to compute Seconds/epoch and Samples/second. Since we reserve 20% of the data for validation, we are left with 104704 training examples. We compute the following:
 ```
-Seconds/epoch = (104704 / GlobalBatchSize) * .131 Seconds/batch
+Seconds/epoch = (104704 / GlobalBatchSize) * 0.131 Seconds/batch
 Samples/second = 104704 / (Seconds/epoch)
 ```
 ***
