@@ -15,13 +15,13 @@ export HDF5_USE_FILE_LOCKING='FALSE'
 bash_script="/scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/aae_run.sh"
 python_exe="/scratch/06079/tg853783/ddmd/envs/pytorch.mpi/bin/python"
 train_script="/scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/train.py"
-config_file="/scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/aae_ddp_template.yaml"
+config_file="/scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/aae_template.yaml"
 output_path="/scratch/06079/tg853783/ddmd/runs/ddp_aae_experiments/2-node_256-gbs"
 data_path="/scratch/06079/tg853783/ddmd/data/preprocessed/spike-all-AAE.h5"
 tmp_data_path="/tmp/spike-all-AAE.h5"
 
 # Copy input data to each node's local storage /tmp
-ntask_cnt=40
+ntask_cnt=4
 cnt=0
 for i in `hostlist -e $SLURM_JOB_NODELIST`
 do
