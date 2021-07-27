@@ -12,7 +12,7 @@ module load conda
 conda activate /scratch/06079/tg853783/ddmd/envs/pytorch.mpi
 export HDF5_USE_FILE_LOCKING='FALSE'
 
-bash_script="/scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/longhorn.sh"
+bash_script="/scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/aae_run.sh"
 python_exe="/scratch/06079/tg853783/ddmd/envs/pytorch.mpi/bin/python"
 train_script="/scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/train.py"
 config_file="/scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/aae_ddp_template.yaml"
