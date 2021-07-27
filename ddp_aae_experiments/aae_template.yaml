@@ -1,5 +1,5 @@
-data_path: /scratch/06079/tg853783/ddmd/data/spike_WE_AAE.h5 
-output_path: /scratch/06079/tg853783/ddmd/runs/aae_runs/run-1
+data_path: /scratch/06079/tg853783/ddmd/data/preprocessed/spike-all-AAE.h5
+output_path: /scratch/06079/tg853783/ddmd/runs/aae_runs/tmp
 init_weights: null
 dataset_name: point_cloud
 rmsd_name: rmsd
