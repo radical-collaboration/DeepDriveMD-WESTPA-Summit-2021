@@ -19,4 +19,4 @@ config_file="/scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_
 output_path="/scratch/06079/tg853783/ddmd/runs/ddp_aae_experiments/2-node_256-gbs"
 
 # Launch MPI code ...
-ibrun -n 8 ${bash_script} ${python_exe} ${train_script} "-c" ${config_file}
+ibrun -n 8 ${bash_script} ${python_exe} ${train_script} "-c" ${config_file} "--output_path" ${output_path}
