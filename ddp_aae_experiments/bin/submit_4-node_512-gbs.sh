@@ -1,11 +1,11 @@
 #!/bin/bash
-#SBATCH -J 4-node_512-gbs        # Job name
-#SBATCH -o %j.out                # Name of stdout output file
-#SBATCH -e %j.err                # Name of stderr error file
-#SBATCH -p v100                  # Queue (partition) name
-#SBATCH -N 4                     # Total # of nodes (must be 1 for serial)
-#SBATCH -n 16                    # Total # of mpi tasks (should be 1 for serial)
-#SBATCH -t 12:00:00              # Run time (hh:mm:ss)
+#SBATCH -J 4-node_512-gbs          # Job name
+#SBATCH -o 4-node_512-gbs_%j.out   # Name of stdout output file
+#SBATCH -e 4-node_512-gbs_%j.err   # Name of stderr error file
+#SBATCH -p v100                    # Queue (partition) name
+#SBATCH -N 4                       # Total # of nodes (must be 1 for serial)
+#SBATCH -n 16                      # Total # of mpi tasks (should be 1 for serial)
+#SBATCH -t 12:00:00                # Run time (hh:mm:ss)
  
 # Other commands must follow all #SBATCH directives ...
 module load conda
