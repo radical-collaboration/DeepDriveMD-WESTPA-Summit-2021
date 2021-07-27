@@ -2,6 +2,7 @@ import itertools
 from pathlib import Path
 from typing import Union, Tuple
 import numpy as np
+import argparse
 import torch
 from torch.utils.data import DataLoader, Dataset, Subset
 from molecules.ml.datasets import PointCloudDataset
@@ -127,17 +128,37 @@ def generate_embeddings(
     return embeddings
 
 
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "-c", "--config", help="YAML config file", type=str, required=True
+    )
+    parser.add_argument(
+        "-d", "--data_path", help="HDF5 data file", type=str, default=None
+    )
+    parser.add_argument(
+        "-m", "--model_path", help="Model weights file", type=str, default=None
+    )
+    parser.add_argument(
+        "-o", "--output_path", help=".npy file to write to", type=str, default=None
+    )
+    parser.add_argument(
+        "-b", "--batch_size", help="Inference batch size", type=int, default=512
+    )
+    args = parser.parse_args()
+    return args
+
+
 if __name__ == "__main__":
 
+    args = parse_args()
+
     embeddings = generate_embeddings(
-        model_cfg_path="./aae_template.yaml",
-        h5_file="/scratch/06079/tg853783/ddmd/data/preprocessed/spike-all-AAE.h5",
-        model_weights_path="/scratch/06079/tg853783/ddmd/runs/aae_runs/run-1/checkpoint/epoch-100-20210721-203025.pt",
-        inference_batch_size=512,
+        model_cfg_path=args.config,
+        h5_file=args.data_path,
+        model_weights_path=args.model_path,
+        inference_batch_size=args.batch_size,
         encoder_gpu=0,
     )
 
-    np.save(
-        "/scratch/06079/tg853783/ddmd/runs/aae_runs/run-1/spike-all-embeddings.npy",
-        embeddings,
-    )
+    np.save(args.output_path, embeddings)
