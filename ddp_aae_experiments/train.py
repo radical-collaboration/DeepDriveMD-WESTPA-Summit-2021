@@ -284,6 +284,9 @@ def parse_args() -> argparse.Namespace:
         "-o", "--output_path", help="Output directory", type=Path, default=None
     )
     parser.add_argument(
+        "-d", "--data_path", help="HDF5 data file", type=Path, default=None
+    )
+    parser.add_argument(
         "-E", "--encoder_gpu", help="GPU to place encoder", type=int, default=0
     )
     parser.add_argument(
@@ -308,4 +311,7 @@ if __name__ == "__main__":
     # Override output path to avoid needing many config files.
     if args.output_path is not None:
         cfg.output_path = args.output_path
+    # Receive data file, potentially from node local storage
+    if args.data_path is not None:
+        cfg.data_path = args.data_path
     main(cfg, args.encoder_gpu, args.generator_gpu, args.decoder_gpu, args.distributed)

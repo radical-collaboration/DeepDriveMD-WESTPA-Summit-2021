@@ -17,6 +17,18 @@ python_exe="/scratch/06079/tg853783/ddmd/envs/pytorch.mpi/bin/python"
 train_script="/scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/train.py"
 config_file="/scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/aae_ddp_template.yaml"
 output_path="/scratch/06079/tg853783/ddmd/runs/ddp_aae_experiments/4-node_512-gbs"
+data_path="/scratch/06079/tg853783/ddmd/data/preprocessed/spike-all-AAE.h5"
+tmp_data_path="/tmp/spike-all-AAE.h5"
+
+# Copy input data to each node's local storage /tmp
+ntask_cnt=40
+cnt=0
+for i in `hostlist -e $SLURM_JOB_NODELIST`
+do
+    ibrun -n 1 -o $(expr $ntask_cnt '*' $cnt) cp ${data_path} ${tmp_data_path} &
+    cnt=$(expr $cnt + 1)
+done
+wait
 
 # Launch MPI code ...
-ibrun -n 16 ${bash_script} ${python_exe} ${train_script} "-c" ${config_file} "--output_path" ${output_path}
+ibrun -n 16 ${bash_script} ${python_exe} ${train_script} "-c" ${config_file} "--output_path" ${output_path} "--data_path" ${tmp_data_path}
