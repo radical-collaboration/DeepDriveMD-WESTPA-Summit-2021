@@ -45,6 +45,6 @@ lambda_rec: 0.5
 lambda_gp: 10.0
 embed_interval: 10
 checkpoint_interval: 10
-sample_interval: 1
+sample_interval: 5
 num_data_workers: 0
 dataset_location: storage
