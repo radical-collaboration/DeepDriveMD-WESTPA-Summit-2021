@@ -314,4 +314,5 @@ if __name__ == "__main__":
     # Receive data file, potentially from node local storage
     if args.data_path is not None:
         cfg.data_path = args.data_path
+
     main(cfg, args.encoder_gpu, args.generator_gpu, args.decoder_gpu, args.distributed)
