@@ -5,7 +5,7 @@
 #SBATCH -p v100                    # Queue (partition) name
 #SBATCH -N 4                       # Total # of nodes (must be 1 for serial)
 #SBATCH -n 16                      # Total # of mpi tasks (should be 1 for serial)
-#SBATCH -t 12:00:00                # Run time (hh:mm:ss)
+#SBATCH -t 06:00:00                # Run time (hh:mm:ss)
  
 # Other commands must follow all #SBATCH directives ...
 module load conda
