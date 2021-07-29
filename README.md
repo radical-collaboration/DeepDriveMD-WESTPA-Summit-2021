@@ -102,3 +102,28 @@ export HDF5_USE_FILE_LOCKING='FALSE'
 ```
 
 Then run the AAE in inference mode and generate embeddings, run: `python inference.py`
+
+### Outlier Detection
+
+To run outlier detection on the AAE embeddings using scikit-learn's [LocalOutlierFactor](https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.LocalOutlierFactor.html#sklearn.neighbors.LocalOutlierFactor) method,
+run the `outlier_detection.py` script as seen below: 
+
+```
+idev -m 10 -n 1 -N 1
+module load conda
+conda activate /scratch/06079/tg853783/ddmd/envs/pytorch.mpi
+cd /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021
+
+python outlier_detection.py \
+--embeddings_path /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/embeddings/1-node_128-gbs_100-epoch.npy \
+--score_output_path /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/outliers/1-node_128-gbs_outlier_scores.npy \
+--index_output_path /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/outliers/1-node_128-gbs_outlier_indices.npy \
+--n_jobs -1
+```
+
+The outlier detection runtime is reported as follows:
+```
+Elapsed time: 292.29s
+```
+
+Note, `n_jobs=-1` allows scikit-learn to use all available processors.
