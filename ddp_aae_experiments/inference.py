@@ -1,3 +1,4 @@
+import time
 import itertools
 from pathlib import Path
 from typing import Union, Tuple
@@ -153,6 +154,8 @@ if __name__ == "__main__":
 
     args = parse_args()
 
+    start = time.time()
+
     embeddings = generate_embeddings(
         model_cfg_path=args.config,
         h5_file=args.data_path,
@@ -160,5 +163,7 @@ if __name__ == "__main__":
         inference_batch_size=args.batch_size,
         encoder_gpu=0,
     )
+
+    print(f"Elapsed time: {round(time.time() - start, 2)}s")
 
     np.save(args.output_path, embeddings)
