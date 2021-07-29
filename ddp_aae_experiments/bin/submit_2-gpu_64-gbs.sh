@@ -31,4 +31,4 @@ done
 wait
 
 # Launch MPI code ...
-ibrun -n 4 ${bash_script} ${python_exe} ${train_script} "-c" ${config_file} "--output_path" ${output_path} "--data_path" ${tmp_data_path}
+ibrun -n 2 ${bash_script} ${python_exe} ${train_script} "-c" ${config_file} "--output_path" ${output_path} "--data_path" ${tmp_data_path}
