@@ -4,14 +4,14 @@ import numpy as np
 from pathlib import Path
 
 
-def detect_outliers(data: np.ndarray, method: str = "lof-sklearn", n_jobs: int = 8):
+def detect_outliers(data: np.ndarray, method: str = "lof-sklearn", n_jobs: int = 8) -> np.ndarray:
     if method == "lof-sklearn":
         from sklearn.neighbors import LocalOutlierFactor
 
         clf = LocalOutlierFactor(n_jobs=n_jobs)
         clf.fit_predict(data)
 
-        return clf.negative_outlier_factor_
+        return np.array(clf.negative_outlier_factor_)
 
     else:
         raise ValueError(f"Invalid method {method}")
@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
     embeddings = np.load(args.embeddings_path)
 
-    outlier_scores, outlier_inds = detect_outliers(embeddings, args.method, args.n_jobs)
+    outlier_scores = detect_outliers(embeddings, args.method, args.n_jobs)
 
     np.save(args.score_output_path, outlier_scores)
 
