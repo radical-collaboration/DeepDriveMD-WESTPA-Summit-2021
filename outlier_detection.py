@@ -29,6 +29,12 @@ def bestk(
     # If larger values are considered best, make large values the smallest
     # in order for the sort function to pick the best values.
     arr = a if smallest else -1 * a
+
+    # Handle case where k is the full length of the array
+    if k == len(arr):
+        best_inds = np.argsort(arr)
+        return arr[best_inds], best_inds
+
     # Only sorts 1 element of `arr`, namely the element that is position
     # k in the sorted array. The elements above and below the kth position
     # are partitioned but not sorted. Returns the indices of the elements
