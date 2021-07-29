@@ -117,13 +117,12 @@ cd /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021
 python outlier_detection.py \
 --embeddings_path /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/embeddings/1-node_128-gbs_100-epoch.npy \
 --score_output_path /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/outliers/1-node_128-gbs_outlier_scores.npy \
---index_output_path /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/outliers/1-node_128-gbs_outlier_indices.npy \
 --n_jobs -1
 ```
 
 The outlier detection runtime is reported as follows:
 ```
-Elapsed time: 292.29s
+Elapsed time: 294.05s
 ```
 
 Note, `n_jobs=-1` allows scikit-learn to use all available processors.
