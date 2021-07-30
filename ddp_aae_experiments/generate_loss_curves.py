@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     paths = [
+        "/scratch/06079/tg853783/ddmd/runs/ddp_aae_experiments/1-gpu_32-gbs",
+        "/scratch/06079/tg853783/ddmd/runs/ddp_aae_experiments/2-gpu_64-gbs",
         "/scratch/06079/tg853783/ddmd/runs/ddp_aae_experiments/1-node_128-gbs",
         "/scratch/06079/tg853783/ddmd/runs/ddp_aae_experiments/2-node_256-gbs",
         "/scratch/06079/tg853783/ddmd/runs/ddp_aae_experiments/4-node_512-gbs",
