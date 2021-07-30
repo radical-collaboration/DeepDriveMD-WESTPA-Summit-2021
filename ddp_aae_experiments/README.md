@@ -32,6 +32,8 @@ We report training benchmark results in the following table:
 
 | Nodes       | GPUs        | Global Batch Size | Samples/second | Seconds/batch | Seconds/epoch |
 |    :----:   |    :----:   |    :----:   |    :----:   |    :----:   |    :----:   |
+| 1           | 1           | 32          | 244         | 0.131       | 428.632     |
+| 1           | 2           | 64          | 488         | 0.131       | 214.316     |
 | 1           | 4           | 128         | 977         | 0.131       | 107.158     |
 | 2           | 8           | 256         | 1954        | 0.131       | 53.579      |
 | 4           | 16          | 512         | 3909        | 0.131       | 26.780      |
