@@ -4,6 +4,8 @@ Our scaling study measures AAE training performance for the following scanarios:
 
 | Nodes       | GPUs        | Global Batch Size |
 |    :----:   |    :----:   |    :----:   |
+| 1           | 1           | 32          |
+| 1           | 2           | 64          |
 | 1           | 4           | 128         |
 | 2           | 8           | 256         |
 | 4           | 16          | 512         |
