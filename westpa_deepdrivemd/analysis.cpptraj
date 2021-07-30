@@ -1,0 +1,35 @@
+parm /scratch/06079/tg853783/ddmd/src/longhorn_slurm/CONFIG/closed.prmtop
+#trajin /oasis/scratch/comet/tsztainp/temp_project/FORKED_2_2/CONFIG/closed.rst
+trajin parent.rst
+trajin seg.nc
+autoimage
+
+parm /scratch/06079/tg853783/ddmd/src/longhorn_slurm/CONFIG/6VSB_equil.pdb [ref2parm]
+reference /scratch/06079/tg853783/ddmd/src/longhorn_slurm/CONFIG/6VSB_equil.pdb [ref2parm]
+
+# align backbone CA to core
+rms reference @CA,14090-14668,17137-17478,17747-18525,35525-36103,38572-38913,39182-39960,56640-57191,59735-60028,60319-61075
+
+# calculate RMSD of RBD beta sheets backbone CA
+rms RMSDA reference @CA,5683-5780,5959-6135,6533-6646,7712-7883 nofit out rbd_rmsdA.dat
+rms RMSDB reference @CA,27021-27118,27297-27473,27871-27984,29050-29221 nofit out rbd_rmsdB.dat
+rms RMSDC reference @CA,48332-48429,48608-48784,49182-49295,50361-50532 nofit out rbd_rmsdC.dat
+
+
+# distance of RBD chain A to center of mass of core
+distance RBD_COM @CA,14090-14668,17137-17478,17747-18525,35525-36103,38572-38913,39182-39960,56640-57191,59735-60028,60319-61075 @CA,5683-5780,5959-6135,6533-6646,7712-7883 out rbd_comA.dat
+distance RBD_COMB @CA,14090-14668,17137-17478,17747-18525,35525-36103,38572-38913,39182-39960,56640-57191,59735-60028,60319-61075 @CA,27021-27118,27297-27473,27871-27984,29050-29221 out rbd_comB.dat
+distance RBD_COMC @CA,14090-14668,17137-17478,17747-18525,35525-36103,38572-38913,39182-39960,56640-57191,59735-60028,60319-61075 @CA,48332-48429,48608-48784,49182-49295,50361-50532 out rbd_comC.dat
+
+# angle between i-1 core and RBD
+angle ANGLE_A :338@CA :2384@CA :2432@CA out rbd_angleA.dat
+angle ANGLE_B :1680@CA :3670@CA :3717@CA out rbd_angleB.dat
+angle ANGLE_C :2972@CA :1087@CA :1135@CA out rbd_angleC.dat
+
+# glycan distance to RBD
+distance n165_glycan @CA,5683-5780,5959-6135,6533-6646,7712-7883 @32858-33023 out n165_glycan.dat
+distance n234_glycan @CA,5683-5780,5959-6135,6533-6646,7712-7883 @33024-33267 out n234_glycan.dat
+distance n343_glycan @CA,5683-5780,5959-6135,6533-6646,7712-7883 @33772-33936 out n343_glycan.dat
+
+strip :WAT,CLA,SOD
+trajout seg_nosolvent.nc onlyframes 2-11
