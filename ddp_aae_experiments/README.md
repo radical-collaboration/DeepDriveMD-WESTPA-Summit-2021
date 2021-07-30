@@ -56,6 +56,8 @@ python generate_loss_curves.py
 ![ReconstructionTrainingLoss](img/ReconstructionTrainingLoss.png)
 ![ValidationLoss](img/ValidationLoss.png)
 
+Note: The loss from the first 10 epochs is ommited to see end behavior clearly.
+
 ***
 
 To generate latent embeddings in inference mode for each of the models, run the following:
