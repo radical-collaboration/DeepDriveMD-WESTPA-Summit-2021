@@ -17,11 +17,15 @@ The aae_template.yaml file stores the model hyperparameters and training setting
 
 We have prepared sbatch submission scripts for each of the above experiments. They can be run as follows:
 ```
+chmod +x ./ddp_aae_experiments/bin/submit_1-gpu_32-gbs.sh
+chmod +x ./ddp_aae_experiments/bin/submit_1-gpu_64-gbs.sh
 chmod +x ./ddp_aae_experiments/bin/submit_1-node_128-gbs.sh
 chmod +x ./ddp_aae_experiments/bin/submit_2-node_256-gbs.sh
 chmod +x ./ddp_aae_experiments/bin/submit_4-node_512-gbs.sh
 chmod +x ./ddp_aae_experiments/bin/submit_8-node_1024-gbs.sh
 
+sbatch ./ddp_aae_experiments/bin/submit_1-gpu_32-gb.sh
+sbatch ./ddp_aae_experiments/bin/submit_1-gpu_64-gbs.sh
 sbatch ./ddp_aae_experiments/bin/submit_1-node_128-gbs.sh
 sbatch ./ddp_aae_experiments/bin/submit_2-node_256-gbs.sh
 sbatch ./ddp_aae_experiments/bin/submit_4-node_512-gbs.sh
