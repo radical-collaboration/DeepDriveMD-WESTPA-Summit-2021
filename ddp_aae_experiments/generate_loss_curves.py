@@ -16,7 +16,7 @@ if __name__ == "__main__":
     csv_files = [Path(p) / "loss.json" for p in paths]
 
     # Epoch to start plotting from so the end behavior is more clearly shown
-    start_epoch = 5
+    start_epoch = 10
 
     # For testing
     # csv_files = [Path("./test.json").resolve()]
