@@ -70,8 +70,14 @@ cd /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiment
 python inference.py \
 --config /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/aae_template.yaml \
 --data_path /scratch/06079/tg853783/ddmd/data/preprocessed/spike-all-AAE.h5 \
---model_path /scratch/06079/tg853783/ddmd/runs/ddp_aae_experiments/1-node_128-gbs/checkpoint/epoch-100-20210727-180344.pt \
---output_path /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/embeddings/1-node_128-gbs_100-epoch.npy
+--model_path /scratch/06079/tg853783/ddmd/runs/ddp_aae_experiments/1-gpu_32-gbs/checkpoint/epoch-80-20210730-051859.pt \
+--output_path /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/embeddings/1-gpu_32-gbs_80-epoch.npy
+
+python inference.py \
+--config /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/aae_template.yaml \
+--data_path /scratch/06079/tg853783/ddmd/data/preprocessed/spike-all-AAE.h5 \
+--model_path /scratch/06079/tg853783/ddmd/runs/ddp_aae_experiments/2-gpu_64-gbs/checkpoint/epoch-100-20210730-014726.pt \
+--output_path /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/embeddings/2-gpu_64-gbs_100-epoch.npy
 
 python inference.py \
 --config /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/aae_template.yaml \
@@ -93,3 +99,5 @@ python inference.py \
 ```
 
 Each run of `inference.py` takes about 125 seconds.
+
+Note: We use the checkpoint written from epoch 80 of the 1-gpu_32-gbs run since the training NANs out shortly after.
