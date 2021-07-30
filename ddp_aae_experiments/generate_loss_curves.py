@@ -15,6 +15,9 @@ if __name__ == "__main__":
 
     csv_files = [Path(p) / "loss.json" for p in paths]
 
+    # Epoch to start plotting from so the end behavior is more clearly shown
+    start_epoch = 5
+
     # For testing
     # csv_files = [Path("./test.json").resolve()]
 
@@ -37,7 +40,7 @@ if __name__ == "__main__":
         df = pd.DataFrame(
             {p.parent.name: loss for p, loss in zip(csv_files, loss_type)}
         )
-        df.plot(legend=True)
+        df[start_epoch:].plot(legend=True)
         plt.title(title)
         plt.xlabel("Epoch")
         plt.ylabel("Loss")
