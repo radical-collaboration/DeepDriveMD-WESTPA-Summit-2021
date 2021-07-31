@@ -14,10 +14,10 @@ cp $WEST_SIM_ROOT/analysis.cpptraj .
 
 if [ "$WEST_CURRENT_SEG_INITPOINT_TYPE" = "SEG_INITPOINT_CONTINUES" ]; then
   sed "s/RAND/$WEST_RAND16/g" $WEST_SIM_ROOT/CONFIG/prod.in > prod.in
-  cp $WEST_PARENT_DATA_REF/seg.rst ./parent.rst
+  cp $WEST_PARENT_DATA_REF/seg.restrt ./parent.restrt
 elif [ "$WEST_CURRENT_SEG_INITPOINT_TYPE" = "SEG_INITPOINT_NEWTRAJ" ]; then
   sed "s/RAND/$WEST_RAND16/g" $WEST_SIM_ROOT/CONFIG/prod.in > prod.in
-  cp $WEST_PARENT_DATA_REF ./parent.rst
+  cp $WEST_PARENT_DATA_REF ./parent.restrt
 fi
 
 export CUDA_DEVICES=(`echo $CUDA_VISIBLE_DEVICES_ALLOCATED | tr , ' '`)
@@ -28,7 +28,7 @@ echo "RUNSEG.SH: WM_PROCESS_INDEX = " $WM_PROCESS_INDEX
 echo "RUNSEG.SH: CUDA_VISIBLE_DEVICES = " $CUDA_VISIBLE_DEVICES
 
 # Runs dynamics
-$PMEMD -O -p closed.prmtop    -i   prod.in  -c parent.rst  -o seg.out           -inf seg.nfo -l seg.log -x seg.nc            -r   seg.rst || exit 1
+$PMEMD -O -p closed.prmtop    -i   prod.in  -c parent.restrt  -o seg.out           -inf seg.nfo -l seg.log -x seg.nc            -r   seg.restrt || exit 1
 
 # Calculate dynamics
 #$CPPTRAJ -i analysis.cpptraj
@@ -53,7 +53,7 @@ $PMEMD -O -p closed.prmtop    -i   prod.in  -c parent.rst  -o seg.out           
 #cat $WEST_SIM_ROOT/pcoord.txt > $WEST_PCOORD_RETURN
 
 pcoord_file=$WEST_SIM_ROOT/PCOORDS/$(uuidgen).txt
-/scratch/06079/tg853783/ddmd/envs/pytorch.mpi/bin/python $WEST_SIM_ROOT/deepdrivemd.py -t $WEST_SIM_ROOT/CONFIG/closed.prmtop -c seq.nc -o ${pcoord_file} -p parent.rst
+/scratch/06079/tg853783/ddmd/envs/pytorch.mpi/bin/python $WEST_SIM_ROOT/deepdrivemd.py -t $WEST_SIM_ROOT/CONFIG/closed.prmtop -c seq.nc -o ${pcoord_file} -p parent.restrt
 cat ${pcoord_file}>$WEST_PCOORD_RETURN
 rm ${pcoord_file}
 
