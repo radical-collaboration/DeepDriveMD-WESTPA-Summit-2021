@@ -53,7 +53,8 @@ $PMEMD -O -p closed.prmtop    -i   prod.in  -c parent.restrt  -o seg.out        
 #cat $WEST_SIM_ROOT/pcoord.txt > $WEST_PCOORD_RETURN
 
 pcoord_file=$WEST_SIM_ROOT/PCOORDS/$(uuidgen).txt
-/scratch/06079/tg853783/ddmd/envs/pytorch.mpi/bin/python $WEST_SIM_ROOT/deepdrivemd.py -t $WEST_SIM_ROOT/CONFIG/closed.prmtop -c seq.nc -o ${pcoord_file} -p parent.restrt
+ambpdb -p closed.prmtop -c parent.restrt > parent.pdb
+/scratch/06079/tg853783/ddmd/envs/pytorch.mpi/bin/python $WEST_SIM_ROOT/deepdrivemd.py -t $WEST_SIM_ROOT/CONFIG/closed.pdb -c seg.nc -o ${pcoord_file} -p parent.pdb
 cat ${pcoord_file}>$WEST_PCOORD_RETURN
 rm ${pcoord_file}
 
