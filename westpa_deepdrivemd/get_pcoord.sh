@@ -22,12 +22,12 @@ COM=$(mktemp)
 #paste <(cat $COM | tail -n 1 | awk {'print $2'}) <(cat $RMSD | tail -n 1 | awk {'print $2'})>$WEST_PCOORD_RETURN
 #rm $RMSD $COM
 
-
-/scratch/06079/tg853783/ddmd/envs/pytorch.mpi/bin/python $WEST_SIM_ROOT/deepdrivemd.py -t $WEST_SIM_ROOT/CONFIG/closed.prmtop -c $WEST_STRUCT_DATA_REF
-cat $WEST_SIM_ROOT/pcoord.txt>$WEST_PCOORD_RETURN
-
+pcoord_file=$WEST_SIM_ROOT/PCOORDS/$(uuidgen).txt
+/scratch/06079/tg853783/ddmd/envs/pytorch.mpi/bin/python $WEST_SIM_ROOT/deepdrivemd.py -t $WEST_SIM_ROOT/CONFIG/closed.prmtop -c $WEST_STRUCT_DATA_REF -o ${pcoord_file}
+#cat $WEST_SIM_ROOT/pcoord.txt>$WEST_PCOORD_RETURN
+cat ${pcoord_file}>$WEST_PCOORD_RETURN
+rm ${pcoord_file}
 
 if [ -n "$SEG_DEBUG" ] ; then
     head -v $WEST_PCOORD_RETURN
 fi
-
