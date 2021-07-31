@@ -79,7 +79,7 @@ others.
 ***
 
 
-### Training
+### Training & Inference
 
 Please see this [README](https://github.com/DeepDriveMD/DeepDriveMD-Longhorn-2021/blob/main/ddp_aae_experiments/README.md).
 
