@@ -23,9 +23,8 @@ COM=$(mktemp)
 #rm $RMSD $COM
 
 
-module load python3
-python $WEST_SIM_ROOT/deepdrivemd.py -t $WEST_SIM_ROOT/CONFIG/closed.prmtop -c $WEST_STRUCT_DATA_REF
-cat pcoord.txt>$WEST_PCOORD_RETURN
+/scratch/06079/tg853783/ddmd/envs/pytorch.mpi/bin/python $WEST_SIM_ROOT/deepdrivemd.py -t $WEST_SIM_ROOT/CONFIG/closed.prmtop -c $WEST_STRUCT_DATA_REF
+cat $WEST_SIM_ROOT/pcoord.txt>$WEST_PCOORD_RETURN
 
 
 if [ -n "$SEG_DEBUG" ] ; then

@@ -11,7 +11,8 @@ module load cuda/10.1
 module use /scratch/apps/modulefiles
 module load amber/18.0
 module load conda
-conda activate westpa-2020.02
+conda activate /scratch/06079/tg853783/ddmd/envs/westpa
+#conda activate westpa-2020.02
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 # export PATH=$(echo $PATH | sed -e 's|///home/07392/tsztainp/:||g')
 export PYTHONPATH=/scratch/06079/tg853783/ddmd/envs/westpa/bin/python

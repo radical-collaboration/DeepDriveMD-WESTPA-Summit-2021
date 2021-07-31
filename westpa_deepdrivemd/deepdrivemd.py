@@ -27,8 +27,11 @@ if __name__ == "__main__":
 
     if args.coord.suffix == ".rst":
         a = np.array([[1, 2]])
+        print(".rst file detected")
     else:
         a = np.array([[1, 2], [3,4], [5, 6]])
-    
+        print(".nc file detected")
+   
+    print("writing pcoord.txt") 
     np.savetxt("pcoord.txt", a, fmt='%.4f')
  

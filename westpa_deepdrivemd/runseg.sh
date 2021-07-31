@@ -31,7 +31,7 @@ echo "RUNSEG.SH: CUDA_VISIBLE_DEVICES = " $CUDA_VISIBLE_DEVICES
 $PMEMD -O -p closed.prmtop    -i   prod.in  -c parent.rst  -o seg.out           -inf seg.nfo -l seg.log -x seg.nc            -r   seg.rst || exit 1
 
 # Calculate dynamics
-$CPPTRAJ -i analysis.cpptraj
+#$CPPTRAJ -i analysis.cpptraj
 
 # Write code in external python script
 #def f():
@@ -48,10 +48,9 @@ $CPPTRAJ -i analysis.cpptraj
 # This shape is defined in west.cfg
 # Need to replace below line with output of my function
 #paste <(cat rbd_comA.dat | tail -n +2 | awk {'print $2'}) <(cat rbd_rmsdA.dat | tail -n +2 | awk {'print $2'})>$WEST_PCOORD_RETURN
-module load python3
-python $WEST_SIM_ROOT/deepdrivemd.py -t $WEST_SIM_ROOT/CONFIG/closed.prmtop -c seg.nc
+/scratch/06079/tg853783/ddmd/envs/pytorch.mpi/bin/python $WEST_SIM_ROOT/deepdrivemd.py -t $WEST_SIM_ROOT/CONFIG/closed.prmtop -c seg.nc
 #python $WEST_SIM_ROOT/deepdrivemd.py
-cat pcoord.txt > $WEST_PCOORD_RETURN
+cat $WEST_SIM_ROOT/pcoord.txt > $WEST_PCOORD_RETURN
 
 
 #cat rbd_rmsdB.dat | tail -n +2 | awk {'print $2'} > $WEST_RBD_RMSDB_RETURN
