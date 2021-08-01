@@ -5,6 +5,12 @@ from pathlib import Path
 import MDAnalysis as mda
 from MDAnalysis.analysis import rms, align
 from typing import Union, List, Tuple, Optional
+import torch
+from torch.utils.data import DataLoader
+from molecules.ml.datasets import PointCloudDataset
+from molecules.ml.unsupervised.point_autoencoder import AAE3dHyperparams
+from molecules.ml.unsupervised.point_autoencoder.aae import Encoder
+from aae_config import AAEModelConfig
 
 PathLike = Union[str, Path]
 
@@ -172,6 +178,80 @@ def preprocess_pdb(
     return rmsds, point_clouds
 
 
+def generate_embeddings(
+    model_cfg_path: PathLike,
+    h5_file: PathLike,
+    model_weights_path: PathLike,
+    inference_batch_size: int,
+    encoder_gpu: int,
+) -> np.ndarray:
+
+    model_cfg = AAEModelConfig.from_yaml(model_cfg_path)
+
+    model_hparams = AAE3dHyperparams(
+        num_features=model_cfg.num_features,
+        encoder_filters=model_cfg.encoder_filters,
+        encoder_kernel_sizes=model_cfg.encoder_kernel_sizes,
+        generator_filters=model_cfg.generator_filters,
+        discriminator_filters=model_cfg.discriminator_filters,
+        latent_dim=model_cfg.latent_dim,
+        encoder_relu_slope=model_cfg.encoder_relu_slope,
+        generator_relu_slope=model_cfg.generator_relu_slope,
+        discriminator_relu_slope=model_cfg.discriminator_relu_slope,
+        use_encoder_bias=model_cfg.use_encoder_bias,
+        use_generator_bias=model_cfg.use_generator_bias,
+        use_discriminator_bias=model_cfg.use_discriminator_bias,
+        noise_mu=model_cfg.noise_mu,
+        noise_std=model_cfg.noise_std,
+        lambda_rec=model_cfg.lambda_rec,
+        lambda_gp=model_cfg.lambda_gp,
+    )
+
+    encoder = Encoder(
+        model_cfg.num_points,
+        model_cfg.num_features,
+        model_hparams,
+        str(model_weights_path),
+    )
+
+    dataset = PointCloudDataset(
+        str(h5_file),
+        model_cfg.dataset_name,
+        model_cfg.rmsd_name,
+        model_cfg.rmsd_name,
+        model_cfg.num_points,
+        model_hparams.num_features,
+        split="train",
+        split_ptc=1.0,
+        normalize="box",
+        cms_transform=False,
+    )
+
+    # Put encoder on specified CPU/GPU
+    device = torch.device(f"cuda:{encoder_gpu}")
+    encoder.to(device)
+
+    # create data loader
+    data_loader = DataLoader(
+        dataset,
+        batch_size=inference_batch_size,
+        drop_last=False,
+        shuffle=False,
+        pin_memory=True,
+        num_workers=0,
+    )
+
+    # Collect embeddings (requires shuffle=False)
+    embeddings = []
+    for data, *_ in data_loader:
+        data = data.to(device)
+        embeddings.append(encoder.encode(data).cpu().numpy())
+   
+    embeddings = np.concatenate(embeddings)
+
+    return embeddings
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser()
 
@@ -247,6 +327,12 @@ if __name__ == "__main__":
         write_h5(h5_file, rmsds, positions)
         # positions = parse_pdb_positions(args.coord, selection)
         print(positions.shape)
+        embeddings = generate_embeddings(
+            model_cfg_path=args.model_cfg,
+            h5_file=h5_file,
+            model_weights_path=args.model_weights,
+            inference_batch_size=args.batch_size,
+            encoder_gpu=0,)
         a = np.array([[1, 2]])
     else:
         print("parent:", args.parent)
@@ -272,6 +358,5 @@ if __name__ == "__main__":
 
     # Can delete H5 file after coordinates have been computed
     h5_file.unlink()
-    # print("writing pcoord.txt")
     print("writing", args.output_path)
     np.savetxt(args.output_path, a, fmt="%.4f")
