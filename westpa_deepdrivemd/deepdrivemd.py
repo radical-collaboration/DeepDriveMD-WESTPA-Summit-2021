@@ -315,9 +315,13 @@ def parse_nc_positions(pdb: Path, coord: Path, selection: str) -> np.ndarray:
 if __name__ == "__main__":
 
     args = parse_args()
-
+    
+    import sys
+    sys.stdout = open(args.output_path.with_suffix(".log"), "w")
+    sys.stderr = open(args.output_path.with_suffix(".err"), "w")
     print(args.top)
     print(args.coord)
+    sys.stdout.flush()
 
     # Need to create temporary h5 file for AI
     h5_file = args.output_path.with_suffix(".h5")
@@ -334,33 +338,39 @@ if __name__ == "__main__":
         write_h5(h5_file, rmsds, positions)
         # positions = parse_pdb_positions(args.coord, args.selection)
         print(positions.shape)
-        # embeddings = generate_embeddings(
+        #embeddings = generate_embeddings(
         #     model_cfg_path=args.model_cfg,
         #     h5_file=h5_file,
         #     model_weights_path=args.model_weights,
         #     inference_batch_size=args.batch_size,
         #     encoder_gpu=0,
-        # )
+        #)
+        #print("embeddings", embeddings.shape)
         a = np.array([[1, 2]])
     else:
         print("parent:", args.parent)
         print("nc:", args.coord)
+        sys.stdout.flush()
         # parent_positions = parse_pdb_positions(args.parent, args.selection)
         parent_rmsds, parent_positions = preprocess_pdb(
             args.parent, args.ref, selection=args.selection
         )
         print("parent:", parent_positions.shape)
+        sys.stdout.flush()
         rmsds, positions = preprocess_traj(
             args.parent, args.ref, args.coord, selection=args.selection, verbose=True
         )
         # positions = parse_nc_positions(args.parent, args.coord, args.selection)
         print("positions:", positions.shape)
+        sys.stdout.flush()
         rmsds = np.concatenate([parent_rmsds, rmsds])
         positions = np.concatenate([parent_positions, positions])
         print("rmsds shape", rmsds.shape)
         print("rmsds", rmsds)
         print("parent rmsds", parent_rmsds)
         print("positions shape", positions.shape)
+        sys.stdout.flush()
+        write_h5(h5_file, rmsds, positions)
         # embeddings = generate_embeddings(
         #     model_cfg_path=args.model_cfg,
         #     h5_file=h5_file,
@@ -374,4 +384,7 @@ if __name__ == "__main__":
     # Can delete H5 file after coordinates have been computed
     h5_file.unlink()
     print("writing", args.output_path)
+    sys.stdout.flush()
+    sys.stdout.close()
+    sys.stderr.close()
     np.savetxt(args.output_path, a, fmt="%.4f")
