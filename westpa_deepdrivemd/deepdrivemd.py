@@ -246,7 +246,7 @@ def generate_embeddings(
     for data, *_ in data_loader:
         data = data.to(device)
         embeddings.append(encoder.encode(data).cpu().numpy())
-   
+
     embeddings = np.concatenate(embeddings)
 
     return embeddings
@@ -283,6 +283,13 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         required=True,
     )
+    parser.add_argument(
+        "-s",
+        "--selection",
+        help="MDAnalysis selection string.",
+        type=str,
+        default="protein and name CA",
+    )
     args = parser.parse_args()
     return args
 
@@ -315,37 +322,38 @@ if __name__ == "__main__":
     # Need to create temporary h5 file for AI
     h5_file = args.output_path.with_suffix(".h5")
 
-    selection = "protein and name CA"
-
     if args.coord.suffix == ".restrt":
         print(".restrt file detected")
         # HACK: change this to pdb file (which we wrote with amber)
         # since mda can't read the chamber file with the restrt
         args.coord = args.coord.with_suffix(".pdb")
         print("update coord:", args.coord)
-        rmsds, positions = preprocess_pdb(args.coord, args.ref, selection=selection)
+        rmsds, positions = preprocess_pdb(
+            args.coord, args.ref, selection=args.selection
+        )
         write_h5(h5_file, rmsds, positions)
-        # positions = parse_pdb_positions(args.coord, selection)
+        # positions = parse_pdb_positions(args.coord, args.selection)
         print(positions.shape)
-        embeddings = generate_embeddings(
-            model_cfg_path=args.model_cfg,
-            h5_file=h5_file,
-            model_weights_path=args.model_weights,
-            inference_batch_size=args.batch_size,
-            encoder_gpu=0,)
+        # embeddings = generate_embeddings(
+        #     model_cfg_path=args.model_cfg,
+        #     h5_file=h5_file,
+        #     model_weights_path=args.model_weights,
+        #     inference_batch_size=args.batch_size,
+        #     encoder_gpu=0,
+        # )
         a = np.array([[1, 2]])
     else:
         print("parent:", args.parent)
         print("nc:", args.coord)
-        # parent_positions = parse_pdb_positions(args.parent, selection)
+        # parent_positions = parse_pdb_positions(args.parent, args.selection)
         parent_rmsds, parent_positions = preprocess_pdb(
-            args.parent, args.ref, selection=selection
+            args.parent, args.ref, selection=args.selection
         )
         print("parent:", parent_positions.shape)
         rmsds, positions = preprocess_traj(
-            args.parent, args.ref, args.coord, selection=selection, verbose=True
+            args.parent, args.ref, args.coord, selection=args.selection, verbose=True
         )
-        # positions = parse_nc_positions(args.parent, args.coord, selection)
+        # positions = parse_nc_positions(args.parent, args.coord, args.selection)
         print("positions:", positions.shape)
         rmsds = np.concatenate([parent_rmsds, rmsds])
         positions = np.concatenate([parent_positions, positions])
@@ -353,6 +361,13 @@ if __name__ == "__main__":
         print("rmsds", rmsds)
         print("parent rmsds", parent_rmsds)
         print("positions shape", positions.shape)
+        # embeddings = generate_embeddings(
+        #     model_cfg_path=args.model_cfg,
+        #     h5_file=h5_file,
+        #     model_weights_path=args.model_weights,
+        #     inference_batch_size=args.batch_size,
+        #     encoder_gpu=0,
+        # )
 
         a = np.array([[1, 2], [3, 4], [5, 6]])
 
