@@ -228,7 +228,8 @@ def generate_embeddings(
     )
 
     # Put encoder on specified CPU/GPU
-    device = torch.device(f"cuda:{encoder_gpu}")
+    #device = torch.device(f"cuda:{encoder_gpu}")
+    device = torch.device("cpu")
     encoder.to(device)
 
     # create data loader
