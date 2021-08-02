@@ -401,7 +401,9 @@ if __name__ == "__main__":
 
     # Take the first pcoord_dim embedding dims to pass to WESTPA
     # binning algorithm
-    pcoord = embeddings[:, : args.pcoord_dim]
+
+    # TODO: remove abs once we change the binning scheme
+    pcoord = np.abs(embeddings[:, : args.pcoord_dim])
 
     print("pcoord shape:", pcoord.shape)
     print("pcoord:", pcoord)
