@@ -103,10 +103,16 @@ machine_learning_stage:
         output_path: set_by_deepdrivemd
         node_local_path: set_by_deepdrivemd
         model_tag: set_by_deepdrivemd
-        init_weights_path: null
+        init_weights_path: /scratch/06079/tg853783/ddmd/runs/ddp_aae_experiments/1-node_128-gbs/checkpoint/epoch-100-20210727-180344.pt
+        last_n_h5_files: 12
+        k_random_old_h5_files: 12
+        dataset_name: point_cloud
+        rmsd_name: rmsd
+        fnc_name: rmsd
         num_points: 3375
         num_features: 0
-        epochs: 100
+        initial_epochs: 10
+        epochs: 10
         batch_size: 32
         optimizer_name: Adam
         optimizer_lr: 0.0001
@@ -146,7 +152,7 @@ machine_learning_stage:
         embed_interval: 10
         checkpoint_interval: 10
         sample_interval: 5
-        tsne_interval: 10
+        tsne_interval: 101
         num_data_workers: 0
         dataset_location: storage
 model_selection_stage:
@@ -171,6 +177,9 @@ model_selection_stage:
         task_idx: 0
         output_path: set_by_deepdrivemd
         node_local_path: set_by_deepdrivemd
+        retrain_freq: 1
+        checkpoint_dir: checkpoint
+        checkpoint_suffix: .pt
 agent_stage:
     pre_exec:
     - alias ibrun="/scratch/06079/tg853783/ddmd/src/ibrun_new"
@@ -192,5 +201,14 @@ agent_stage:
         task_idx: 0
         output_path: set_by_deepdrivemd
         node_local_path: set_by_deepdrivemd
-        n_traj_frames: 1000
+        num_intrinsic_outliers: 12
+        num_extrinsic_outliers: 12
+        intrinsic_score: lof
+        extrinsic_score: null
+        n_traj_frames: 100
+        n_most_recent_h5_files: 12
+        k_random_old_h5_files: 12
+        sklearn_num_jobs: -1
+        model_type: "AAE3d"
+        inference_batch_size: 128
 
