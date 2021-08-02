@@ -1,4 +1,4 @@
-title: westpa-deepdrivemd
+title: deepdrivemd-spike
 resource: tacc.longhorn
 queue: v100
 schema_: local
@@ -8,7 +8,7 @@ max_iteration: 2
 cpus_per_node: 10
 gpus_per_node: 4
 hardware_threads_per_cpu: 4
-experiment_directory: /scratch/06079/tg853783/ddmd/runs/westpa_deepdrivemd_5th
+experiment_directory: /scratch/06079/tg853783/ddmd/runs/spike_protein_1st
 node_local_path: null
 molecular_dynamics_stage:
     pre_exec: 
@@ -34,9 +34,9 @@ molecular_dynamics_stage:
         task_idx: 0
         output_path: set_by_deepdrivemd
         node_local_path: set_by_deepdrivemd
-        pdb_file: /scratch/06079/tg853783/ddmd/data/system/westpa_deepdrivemd/closed.pdb
+        pdb_file: /scratch/06079/tg853783/ddmd/data/system/spike/spike_WE.pdb
         initial_pdb_dir: /scratch/06079/tg853783/ddmd/data/system/
-        reference_pdb_file: /scratch/06079/tg853783/ddmd/data/system/westpa_deepdrivemd/closed.pdb
+        reference_pdb_file: /scratch/06079/tg853783/ddmd/data/raw/spike_WE.pdb
         solvent_type: explicit
         top_suffix: .prmtop
         simulation_length_ns: 0.1
@@ -81,7 +81,7 @@ machine_learning_stage:
     - 'export IBRUN_TASKS_PER_NODE=4'
     - 'export HDF5_USE_FILE_LOCKING=FALSE'
     - alias ibrun="/scratch/06079/tg853783/ddmd/src/ibrun_new"
-    executable: cat /dev/null; ibrun -n 4 /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/aae_run.sh
+    executable: cat /dev/null; ibrun -n 1 /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/aae_run.sh
     arguments: 
     - /scratch/06079/tg853783/ddmd/envs/pytorch.mpi/bin/python
     - /scratch/06079/tg853783/ddmd/src/DeepDriveMD-pipeline/deepdrivemd/models/aae/train.py
