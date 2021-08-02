@@ -318,6 +318,13 @@ def parse_args() -> argparse.Namespace:
         type=str,
         default="cpu",
     )
+    parser.add_argument(
+        "-n",
+        "--pcoord_dim",
+        help="Dimension of pcoord",
+        type=int,
+        default=2,
+    )
     args = parser.parse_args()
     return args
 
@@ -349,7 +356,7 @@ if __name__ == "__main__":
         print(positions.shape)
         sys.stdout.flush()
         # TODO: remove temp array
-        a = np.array([[1, 2]])
+        # a = np.array([[1, 2]])
     else:
         print("parent:", args.parent)
         print("nc:", args.coord)
@@ -374,7 +381,7 @@ if __name__ == "__main__":
         sys.stdout.flush()
 
         # TODO: remove temp array
-        a = np.array([[1, 2], [3, 4], [5, 6]])
+        # a = np.array([[1, 2], [3, 4], [5, 6]])
 
     # Write model input file
     write_h5(h5_file, rmsds, positions)
@@ -392,11 +399,18 @@ if __name__ == "__main__":
     print("embeddings:", embeddings.shape)
     sys.stdout.flush()
 
+    # Take the first pcoord_dim embedding dims to pass to WESTPA
+    # binning algorithm
+    pcoord = embeddings[:, : args.pcoord_dim]
+
+    print("pcoord shape:", pcoord.shape)
+    print("pcoord:", pcoord)
+    sys.stdout.flush()
+
     # Can delete H5 file after coordinates have been computed
     h5_file.unlink()
     print("writing", args.output_path)
     sys.stdout.flush()
     sys.stdout.close()
     sys.stderr.close()
-    # TODO: update output array
-    np.savetxt(args.output_path, a, fmt="%.4f")
+    np.savetxt(args.output_path, pcoord, fmt="%.4f")

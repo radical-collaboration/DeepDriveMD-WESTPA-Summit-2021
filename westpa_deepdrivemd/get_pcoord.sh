@@ -33,7 +33,8 @@ ${python_path} $WEST_SIM_ROOT/deepdrivemd.py \
   --model_cfg /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/aae_template.yaml \
   --model_weights /scratch/06079/tg853783/ddmd/runs/ddp_aae_experiments/1-node_128-gbs/checkpoint/epoch-100-20210727-180344.pt \
   --batch_size 1 \
-  --device cpu
+  --device cpu \
+  --pcoord_dim 2
 
 #cat $WEST_SIM_ROOT/pcoord.txt>$WEST_PCOORD_RETURN
 cat ${pcoord_file}>$WEST_PCOORD_RETURN
