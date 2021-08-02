@@ -183,7 +183,7 @@ def generate_embeddings(
     h5_file: PathLike,
     model_weights_path: PathLike,
     inference_batch_size: int,
-    encoder_gpu: int,
+    device: str = "cpu",
 ) -> np.ndarray:
 
     model_cfg = AAEModelConfig.from_yaml(model_cfg_path)
@@ -228,8 +228,7 @@ def generate_embeddings(
     )
 
     # Put encoder on specified CPU/GPU
-    #device = torch.device(f"cuda:{encoder_gpu}")
-    device = torch.device("cpu")
+    device = torch.device(device)
     encoder.to(device)
 
     # create data loader
@@ -312,6 +311,13 @@ def parse_args() -> argparse.Namespace:
         type=int,
         default=512,
     )
+    parser.add_argument(
+        "-d",
+        "--device",
+        help="Torch device (cpu, cuda)",
+        type=str,
+        default="cpu",
+    )
     args = parser.parse_args()
     return args
 
@@ -381,7 +387,7 @@ if __name__ == "__main__":
         h5_file=h5_file,
         model_weights_path=args.model_weights,
         inference_batch_size=args.batch_size,
-        encoder_gpu=0,
+        device=args.device,
     )
     print("embeddings:", embeddings.shape)
     sys.stdout.flush()
