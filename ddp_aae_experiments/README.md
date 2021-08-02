@@ -90,6 +90,12 @@ python inference.py \
 python inference.py \
 --config /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/aae_template.yaml \
 --data_path /scratch/06079/tg853783/ddmd/data/preprocessed/spike-all-AAE.h5 \
+--model_path /scratch/06079/tg853783/ddmd/runs/ddp_aae_experiments/1-node_128-gbs/checkpoint/epoch-100-20210727-180344.pt \
+--output_path /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/embeddings/1-node_128-gbs_100-epoch.npy
+
+python inference.py \
+--config /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/aae_template.yaml \
+--data_path /scratch/06079/tg853783/ddmd/data/preprocessed/spike-all-AAE.h5 \
 --model_path /scratch/06079/tg853783/ddmd/runs/ddp_aae_experiments/2-node_256-gbs/checkpoint/epoch-100-20210727-184901.pt \
 --output_path /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/embeddings/2-node_256-gbs_100-epoch.npy
 

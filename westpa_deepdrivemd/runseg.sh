@@ -57,12 +57,15 @@ pcoord_file=$WEST_SIM_ROOT/PCOORDS/$(uuidgen).txt
 ambpdb -p closed.prmtop -c parent.restrt > parent.pdb
 
 ${python_path} $WEST_SIM_ROOT/deepdrivemd.py  \
-  -t $WEST_SIM_ROOT/CONFIG/closed.pdb \
-  -c seg.nc \
-  -o ${pcoord_file} \
-  -p parent.pdb \
-  -r /scratch/06079/tg853783/ddmd/data/raw/spike_WE.pdb \
-  -s "protein and name CA"
+  --top $WEST_SIM_ROOT/CONFIG/closed.pdb \
+  --coord seg.nc \
+  --output_path ${pcoord_file} \
+  --parent parent.pdb \
+  --ref /scratch/06079/tg853783/ddmd/data/raw/spike_WE.pdb \
+  --selection "protein and name CA" \
+  --model_cfg /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/aae_template.yaml \
+  --model_weights /scratch/06079/tg853783/ddmd/runs/ddp_aae_experiments/1-node_128-gbs/checkpoint/epoch-100-20210727-180344.pt \
+  --batch_size 32
 
 cat ${pcoord_file}>$WEST_PCOORD_RETURN
 rm ${pcoord_file}

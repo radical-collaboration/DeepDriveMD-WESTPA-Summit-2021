@@ -25,7 +25,7 @@ def write_point_cloud(h5_file: h5py.File, point_cloud: np.ndarray):
     )
 
 
-def write_rmsd(h5_file: h5py.File, rmsd):
+def write_rmsd(h5_file: h5py.File, rmsd: np.ndarray):
     h5_file.create_dataset(
         "rmsd", data=rmsd, dtype="float16", fletcher32=True, chunks=(1,)
     )
@@ -33,7 +33,7 @@ def write_rmsd(h5_file: h5py.File, rmsd):
 
 def write_h5(
     save_file: PathLike,
-    rmsds: List[float],
+    rmsds: np.ndarray,
     point_clouds: np.ndarray,
 ):
     """
@@ -290,33 +290,37 @@ def parse_args() -> argparse.Namespace:
         type=str,
         default="protein and name CA",
     )
+    parser.add_argument(
+        "-m",
+        "--model_cfg",
+        help="Model configuration file.",
+        type=Path,
+        required=True,
+    )
+    parser.add_argument(
+        "-w",
+        "--model_weights",
+        help="Model weight file.",
+        type=Path,
+        required=True,
+    )
+    parser.add_argument(
+        "-b",
+        "--batch_size",
+        help="Inference batch size",
+        type=int,
+        default=512,
+    )
     args = parser.parse_args()
     return args
-
-
-def parse_pdb_positions(coord: Path, selection: str) -> np.ndarray:
-    u = mda.Universe(coord)
-    atoms = u.select_atoms(selection)
-    return atoms.positions.copy()
-
-
-def parse_nc_positions(pdb: Path, coord: Path, selection: str) -> np.ndarray:
-    u = mda.Universe(str(pdb), str(coord))
-    atoms = u.select_atoms(selection)
-    positions = []
-    for _ in u.trajectory:
-        positions.append(atoms.positions.copy())
-
-    print(positions[0].shape)
-    print("len positions:", len(positions))
-    return np.concatenate(positions)
 
 
 if __name__ == "__main__":
 
     args = parse_args()
-    
+
     import sys
+
     sys.stdout = open(args.output_path.with_suffix(".log"), "w")
     sys.stderr = open(args.output_path.with_suffix(".err"), "w")
     print(args.top)
@@ -335,23 +339,14 @@ if __name__ == "__main__":
         rmsds, positions = preprocess_pdb(
             args.coord, args.ref, selection=args.selection
         )
-        write_h5(h5_file, rmsds, positions)
-        # positions = parse_pdb_positions(args.coord, args.selection)
         print(positions.shape)
-        #embeddings = generate_embeddings(
-        #     model_cfg_path=args.model_cfg,
-        #     h5_file=h5_file,
-        #     model_weights_path=args.model_weights,
-        #     inference_batch_size=args.batch_size,
-        #     encoder_gpu=0,
-        #)
-        #print("embeddings", embeddings.shape)
+        sys.stdout.flush()
+        # TODO: remove temp array
         a = np.array([[1, 2]])
     else:
         print("parent:", args.parent)
         print("nc:", args.coord)
         sys.stdout.flush()
-        # parent_positions = parse_pdb_positions(args.parent, args.selection)
         parent_rmsds, parent_positions = preprocess_pdb(
             args.parent, args.ref, selection=args.selection
         )
@@ -360,7 +355,7 @@ if __name__ == "__main__":
         rmsds, positions = preprocess_traj(
             args.parent, args.ref, args.coord, selection=args.selection, verbose=True
         )
-        # positions = parse_nc_positions(args.parent, args.coord, args.selection)
+
         print("positions:", positions.shape)
         sys.stdout.flush()
         rmsds = np.concatenate([parent_rmsds, rmsds])
@@ -370,16 +365,25 @@ if __name__ == "__main__":
         print("parent rmsds", parent_rmsds)
         print("positions shape", positions.shape)
         sys.stdout.flush()
-        write_h5(h5_file, rmsds, positions)
-        # embeddings = generate_embeddings(
-        #     model_cfg_path=args.model_cfg,
-        #     h5_file=h5_file,
-        #     model_weights_path=args.model_weights,
-        #     inference_batch_size=args.batch_size,
-        #     encoder_gpu=0,
-        # )
 
+        # TODO: remove temp array
         a = np.array([[1, 2], [3, 4], [5, 6]])
+
+    # Write model input file
+    write_h5(h5_file, rmsds, positions)
+    print("wrote h5")
+    sys.stdout.flush()
+
+    # Run model in inference
+    embeddings = generate_embeddings(
+        model_cfg_path=args.model_cfg,
+        h5_file=h5_file,
+        model_weights_path=args.model_weights,
+        inference_batch_size=args.batch_size,
+        encoder_gpu=0,
+    )
+    print("embeddings:", embeddings.shape)
+    sys.stdout.flush()
 
     # Can delete H5 file after coordinates have been computed
     h5_file.unlink()
@@ -387,4 +391,5 @@ if __name__ == "__main__":
     sys.stdout.flush()
     sys.stdout.close()
     sys.stderr.close()
+    # TODO: update output array
     np.savetxt(args.output_path, a, fmt="%.4f")
