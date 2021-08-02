@@ -22,8 +22,15 @@ COM=$(mktemp)
 #paste <(cat $COM | tail -n 1 | awk {'print $2'}) <(cat $RMSD | tail -n 1 | awk {'print $2'})>$WEST_PCOORD_RETURN
 #rm $RMSD $COM
 
+python_path=/scratch/06079/tg853783/ddmd/envs/pytorch.mpi/bin/python
 pcoord_file=$WEST_SIM_ROOT/PCOORDS/$(uuidgen).txt
-/scratch/06079/tg853783/ddmd/envs/pytorch.mpi/bin/python $WEST_SIM_ROOT/deepdrivemd.py -t $WEST_SIM_ROOT/CONFIG/closed.pdb -c $WEST_STRUCT_DATA_REF -o ${pcoord_file}
+${python_path} $WEST_SIM_ROOT/deepdrivemd.py \
+  -t $WEST_SIM_ROOT/CONFIG/closed.pdb \
+  -c $WEST_STRUCT_DATA_REF \
+  -o ${pcoord_file} \
+  -r /scratch/06079/tg853783/ddmd/data/raw/spike_WE.pdb \
+  -s "protein and name CA"
+
 #cat $WEST_SIM_ROOT/pcoord.txt>$WEST_PCOORD_RETURN
 cat ${pcoord_file}>$WEST_PCOORD_RETURN
 rm ${pcoord_file}
