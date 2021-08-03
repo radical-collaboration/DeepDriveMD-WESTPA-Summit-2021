@@ -3,9 +3,9 @@
 #SBATCH -J final-spike-we
 #SBATCH -o final.%j.%N.out
 #SBATCH -e final.%j.%N.err
-#SBATCH -N 1
-#SBATCH -n 4
-#SBATCH -t 00:15:00
+#SBATCH -N 25
+#SBATCH -n 100
+#SBATCH -t 01:00:00
 
 set -x
 cd $SLURM_SUBMIT_DIR

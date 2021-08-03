@@ -8,7 +8,7 @@ mv seg_logs{,$SFX}
 mv istates{,$SFX}
 rm -Rf traj_segs$SFX seg_logs$SFX istates$SFX & disown %1
 rm -f system.h5 west.h5 seg_logs.tar 
-rm -rf traj_segs seg_logs istates west.h5 west*.log *.json *txt *out *err
+rm -rf PCOORDS/* traj_segs seg_logs istates west.h5 west*.log *.json *.txt *.out *.err
 mkdir seg_logs traj_segs istates
 
 BSTATE_ARGS="--bstate-file $WEST_SIM_ROOT/BASIS_STATES"

@@ -15,7 +15,31 @@ class SDASystem(WESTSystem):
     Class specify binning schemes, walker counts, and other core weighted
     ensemble parameters.
     '''
+
     def initialize(self):
+
+        # pcoord dimensionality and length
+        self.pcoord_ndim            = 2
+        self.pcoord_len             = 11 # (nstlim / ntwx + 1) #11 # 3
+        self.pcoord_dtype           = numpy.float32
+
+        # Latent space has a standard normal prior so we can expect most of
+	# the laten coordinates to be within (-3, 3). Using 0.5 space gives 12x12 grid + infinities
+        latent_dim = 2
+        space = ["-inf"] + list(numpy.arange(-3.0, 3.0, 0.5)) + ["inf"]
+        output_space = [space.copy() for _ in range(latent_dim)]
+        self.bin_mapper = RectilinearBinMapper(output_space)
+
+        self.bin_target_counts = numpy.empty(
+            (self.bin_mapper.nbins,), dtype=numpy.int
+        )
+
+        # Number of walkers (trajectories) per bin
+        self.bin_target_counts[...] = 8 # 1
+        # set to 1 for testing try 2 if it breaks. number of target trajs per bin.. 
+        # 1 walker per bin means fewer trajectories. 8
+
+    def test_initialize(self):
 
 #       pcoord dimensionality and length
         self.pcoord_ndim            = 2

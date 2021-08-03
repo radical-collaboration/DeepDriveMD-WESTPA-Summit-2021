@@ -9,8 +9,13 @@ cd $WEST_SIM_ROOT
 mkdir -pv $WEST_CURRENT_SEG_DATA_REF
 cd $WEST_CURRENT_SEG_DATA_REF
 
+# Stage data on node local storage
 cp $WEST_SIM_ROOT/CONFIG/closed.prmtop .
-cp $WEST_SIM_ROOT/analysis.cpptraj .
+#cp $WEST_SIM_ROOT/analysis.cpptraj .
+cp /scratch/06079/tg853783/ddmd/data/raw/spike_WE.pdb .
+cp /scratch/06079/tg853783/ddmd/runs/ddp_aae_experiments/1-node_128-gbs/checkpoint/epoch-100-20210727-180344.pt .
+cp /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/aae_template.yaml .
+cp $WEST_SIM_ROOT/CONFIG/closed.pdb .
 
 if [ "$WEST_CURRENT_SEG_INITPOINT_TYPE" = "SEG_INITPOINT_CONTINUES" ]; then
   sed "s/RAND/$WEST_RAND16/g" $WEST_SIM_ROOT/CONFIG/prod.in > prod.in
@@ -57,16 +62,16 @@ pcoord_file=$WEST_SIM_ROOT/PCOORDS/$(uuidgen).txt
 ambpdb -p closed.prmtop -c parent.restrt > parent.pdb
 
 ${python_path} $WEST_SIM_ROOT/deepdrivemd.py  \
-  --top $WEST_SIM_ROOT/CONFIG/closed.pdb \
+  --top closed.pdb \
   --coord seg.nc \
   --output_path ${pcoord_file} \
   --parent parent.pdb \
-  --ref /scratch/06079/tg853783/ddmd/data/raw/spike_WE.pdb \
+  --ref spike_WE.pdb \
   --selection "protein and name CA" \
-  --model_cfg /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/aae_template.yaml \
-  --model_weights /scratch/06079/tg853783/ddmd/runs/ddp_aae_experiments/1-node_128-gbs/checkpoint/epoch-100-20210727-180344.pt \
+  --model_cfg aae_template.yaml \
+  --model_weights epoch-100-20210727-180344.pt \
   --batch_size 32 \
-  --device cpu \
+  --device cuda \
   --pcoord_dim 2
 
 cat ${pcoord_file}>$WEST_PCOORD_RETURN
@@ -88,4 +93,4 @@ rm ${pcoord_file}
 #cat n343_glycan.dat | tail -n +2 | awk {'print $2'} > $WEST_N343_GLYCAN_RETURN
 
 mv seg_nosolvent.nc seg.nc
-rm -f prod.in closed.prmtop analysis.cpptraj
+rm -f prod.in closed.prmtop closed.pdb spike_WE.pdb aae_template.yaml checkpoint/epoch-100-20210727-180344.pt #analysis.cpptraj

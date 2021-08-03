@@ -237,8 +237,8 @@ def generate_embeddings(
         batch_size=inference_batch_size,
         drop_last=False,
         shuffle=False,
-        pin_memory=True,
-        num_workers=0,
+        #pin_memory=True,
+        #num_workers=0,
     )
 
     # Collect embeddings (requires shuffle=False)
@@ -334,6 +334,8 @@ if __name__ == "__main__":
     args = parse_args()
 
     import sys
+    import time
+    start = time.time()
 
     sys.stdout = open(args.output_path.with_suffix(".log"), "w")
     sys.stderr = open(args.output_path.with_suffix(".err"), "w")
@@ -355,6 +357,7 @@ if __name__ == "__main__":
         )
         print(positions.shape)
         sys.stdout.flush()
+        traj_time = time.time()
         # TODO: remove temp array
         # a = np.array([[1, 2]])
     else:
@@ -364,11 +367,16 @@ if __name__ == "__main__":
         parent_rmsds, parent_positions = preprocess_pdb(
             args.parent, args.ref, selection=args.selection
         )
+        parent_time = time.time()
+        print("parent preprocess time:", parent_time - start)
         print("parent:", parent_positions.shape)
         sys.stdout.flush()
         rmsds, positions = preprocess_traj(
             args.parent, args.ref, args.coord, selection=args.selection, verbose=True
         )
+
+        traj_time = time.time()
+        print("traj preprocess time:", traj_time - parent_time)
 
         print("positions:", positions.shape)
         sys.stdout.flush()
@@ -385,6 +393,8 @@ if __name__ == "__main__":
 
     # Write model input file
     write_h5(h5_file, rmsds, positions)
+    write_time = time.time()
+    print("write h5 time", write_time - traj_time)
     print("wrote h5")
     sys.stdout.flush()
 
@@ -396,14 +406,15 @@ if __name__ == "__main__":
         inference_batch_size=args.batch_size,
         device=args.device,
     )
+    ai_time = time.time()
+    print("AI time:", ai_time - write_time)
     print("embeddings:", embeddings.shape)
     sys.stdout.flush()
 
     # Take the first pcoord_dim embedding dims to pass to WESTPA
     # binning algorithm
 
-    # TODO: remove abs once we change the binning scheme
-    pcoord = np.abs(embeddings[:, : args.pcoord_dim])
+    pcoord = embeddings[:, : args.pcoord_dim]
 
     print("pcoord shape:", pcoord.shape)
     print("pcoord:", pcoord)
@@ -412,7 +423,8 @@ if __name__ == "__main__":
     # Can delete H5 file after coordinates have been computed
     h5_file.unlink()
     print("writing", args.output_path)
+    np.savetxt(args.output_path, pcoord, fmt="%.4f")
+    print("total time:", time.time() - start)
     sys.stdout.flush()
     sys.stdout.close()
     sys.stderr.close()
-    np.savetxt(args.output_path, pcoord, fmt="%.4f")

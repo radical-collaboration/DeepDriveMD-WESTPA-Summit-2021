@@ -9,7 +9,8 @@ alias python='/scratch/06079/tg853783/ddmd/envs/westpa/bin/python'
 module load launcher-gpu
 module load cuda/10.1
 module use /scratch/apps/modulefiles
-module load amber/18.0
+#module load amber/18.0
+module load gcc/7.3.0 mvapich2-gdr/2.3.4 amber/20.0
 module load conda
 conda activate /scratch/06079/tg853783/ddmd/envs/westpa
 #conda activate westpa-2020.02
