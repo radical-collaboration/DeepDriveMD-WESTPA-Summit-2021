@@ -5,23 +5,15 @@ if [ -n "$SEG_DEBUG" ] ; then
   env | sort
 fi
 
-cd $WEST_SIM_ROOT
-mkdir -pv $WEST_CURRENT_SEG_DATA_REF
-cd $WEST_CURRENT_SEG_DATA_REF
-
-# Stage data on node local storage
-cp $WEST_SIM_ROOT/CONFIG/closed.prmtop .
-#cp $WEST_SIM_ROOT/analysis.cpptraj .
-cp /scratch/06079/tg853783/ddmd/data/raw/spike_WE.pdb .
-cp /scratch/06079/tg853783/ddmd/runs/ddp_aae_experiments/1-node_128-gbs/checkpoint/epoch-100-20210727-180344.pt .
-cp /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/aae_template.yaml .
-cp $WEST_SIM_ROOT/CONFIG/closed.pdb .
+echo /tmp/$WEST_CURRENT_SEG_DATA_REF
+mkdir -pv /tmp/$WEST_CURRENT_SEG_DATA_REF
+cd /tmp/$WEST_CURRENT_SEG_DATA_REF
 
 if [ "$WEST_CURRENT_SEG_INITPOINT_TYPE" = "SEG_INITPOINT_CONTINUES" ]; then
-  sed "s/RAND/$WEST_RAND16/g" $WEST_SIM_ROOT/CONFIG/prod.in > prod.in
+  sed "s/RAND/$WEST_RAND16/g" /tmp/prod.in > ./prod.in
   cp $WEST_PARENT_DATA_REF/seg.restrt ./parent.restrt
 elif [ "$WEST_CURRENT_SEG_INITPOINT_TYPE" = "SEG_INITPOINT_NEWTRAJ" ]; then
-  sed "s/RAND/$WEST_RAND16/g" $WEST_SIM_ROOT/CONFIG/prod.in > prod.in
+  sed "s/RAND/$WEST_RAND16/g" /tmp/prod.in > ./prod.in
   cp $WEST_PARENT_DATA_REF ./parent.restrt
 fi
 
@@ -32,18 +24,14 @@ echo "RUNSEG.SH: CUDA_VISIBLE_DEVICES_ALLOCATED = " $CUDA_VISIBLE_DEVICES_ALLOCA
 echo "RUNSEG.SH: WM_PROCESS_INDEX = " $WM_PROCESS_INDEX
 echo "RUNSEG.SH: CUDA_VISIBLE_DEVICES = " $CUDA_VISIBLE_DEVICES
 
+pwd
+ls
+
 # Runs dynamics
-$PMEMD -O -p closed.prmtop    -i   prod.in  -c parent.restrt  -o seg.out           -inf seg.nfo -l seg.log -x seg.nc            -r   seg.restrt || exit 1
+$PMEMD -O -p /tmp/closed.prmtop -i ./prod.in -c ./parent.restrt -o ./seg.out -inf ./seg.nfo -l ./seg.log -x ./seg.nc -r ./seg.restrt || exit 1
 
-# Calculate dynamics
-#$CPPTRAJ -i analysis.cpptraj
-
-# Write code in external python script
-#def f():
-#  take westpa input
-#  preprocess
-#  pc = call AI in inference
-#  write pc
+echo "Finished dynamics, running analysis ..."
+ls 
 
 # WEST_PCOORD_RETURN holds the progress coorinates
 # If it recieves the wrong shape it will crash
@@ -51,46 +39,38 @@ $PMEMD -O -p closed.prmtop    -i   prod.in  -c parent.restrt  -o seg.out        
 # in 2d case: every line contains two values separated by white space
 # each line in these files corresponds to a frame of the trajcetory
 # This shape is defined in west.cfg
-# Need to replace below line with output of my function
-#paste <(cat rbd_comA.dat | tail -n +2 | awk {'print $2'}) <(cat rbd_rmsdA.dat | tail -n +2 | awk {'print $2'})>$WEST_PCOORD_RETURN
-#/scratch/06079/tg853783/ddmd/envs/pytorch.mpi/bin/python $WEST_SIM_ROOT/deepdrivemd.py -t $WEST_SIM_ROOT/CONFIG/closed.prmtop -c seg.nc
-#python $WEST_SIM_ROOT/deepdrivemd.py
-#cat $WEST_SIM_ROOT/pcoord.txt > $WEST_PCOORD_RETURN
 
 python_path=/scratch/06079/tg853783/ddmd/envs/pytorch.mpi/bin/python
-pcoord_file=$WEST_SIM_ROOT/PCOORDS/$(uuidgen).txt
-ambpdb -p closed.prmtop -c parent.restrt > parent.pdb
+#pcoord_file=$(uuidgen).txt
+# No longer need uuid since each output directory is unique
+#pcoord_file=pcoord.txt
+ambpdb -p /tmp/closed.prmtop -c ./parent.restrt > ./parent.pdb
+
+ls
 
 ${python_path} $WEST_SIM_ROOT/deepdrivemd.py  \
-  --top closed.pdb \
-  --coord seg.nc \
-  --output_path ${pcoord_file} \
-  --parent parent.pdb \
-  --ref spike_WE.pdb \
+  --top /tmp/closed.pdb \
+  --coord ./seg.nc \
+  --output_path ./pcoord.txt \
+  --parent ./parent.pdb \
+  --ref /tmp/spike_WE.pdb \
   --selection "protein and name CA" \
-  --model_cfg aae_template.yaml \
-  --model_weights epoch-100-20210727-180344.pt \
+  --model_cfg /tmp/aae_template.yaml \
+  --model_weights /tmp/epoch-100-20210727-180344.pt \
   --batch_size 32 \
   --device cuda \
   --pcoord_dim 2
 
-cat ${pcoord_file}>$WEST_PCOORD_RETURN
-rm ${pcoord_file}
+echo "Finished analysis, cleaning up ..."
 
+cat ./pcoord.txt > $WEST_PCOORD_RETURN
 
-#cat rbd_rmsdB.dat | tail -n +2 | awk {'print $2'} > $WEST_RBD_RMSDB_RETURN
-#cat rbd_rmsdC.dat | tail -n +2 | awk {'print $2'} > $WEST_RBD_RMSDC_RETURN
+#mv seg_nosolvent.nc seg.nc
+#rm -f prod.in closed.prmtop closed.pdb spike_WE.pdb aae_template.yaml epoch-100-20210727-180344.pt #analysis.cpptraj
 
-#cat rbd_comB.dat | tail -n +2 | awk {'print $2'} > $WEST_RBD_COMB_RETURN
-#cat rbd_comC.dat | tail -n +2 | awk {'print $2'} > $WEST_RBD_COMC_RETURN
+# Remove temporary files
+rm ./prod.in ./pcoord.txt
+# Move data from node local to file system
+mkdir -pv $WEST_CURRENT_SEG_DATA_REF
+mv * $WEST_CURRENT_SEG_DATA_REF
 
-#cat rbd_angleA.dat | tail -n +2 | awk {'print $2'} > $WEST_RBD_ANGLEA_RETURN
-#cat rbd_angleB.dat | tail -n +2 | awk {'print $2'} > $WEST_RBD_ANGLEB_RETURN
-#cat rbd_angleC.dat | tail -n +2 | awk {'print $2'} > $WEST_RBD_ANGLEC_RETURN
-
-#cat n165_glycan.dat | tail -n +2 | awk {'print $2'} > $WEST_N165_GLYCAN_RETURN 
-#cat n234_glycan.dat | tail -n +2 | awk {'print $2'} > $WEST_N234_GLYCAN_RETURN
-#cat n343_glycan.dat | tail -n +2 | awk {'print $2'} > $WEST_N343_GLYCAN_RETURN
-
-mv seg_nosolvent.nc seg.nc
-rm -f prod.in closed.prmtop closed.pdb spike_WE.pdb aae_template.yaml checkpoint/epoch-100-20210727-180344.pt #analysis.cpptraj

@@ -10,8 +10,6 @@
 
 set -x
 
-sleep 30
-
 echo "start init"
 ./init.sh
 echo "finish init"

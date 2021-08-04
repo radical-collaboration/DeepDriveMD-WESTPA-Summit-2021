@@ -22,7 +22,6 @@ ref_pdb=/scratch/06079/tg853783/ddmd/data/raw/spike_WE.pdb
 model_weights=/scratch/06079/tg853783/ddmd/runs/ddp_aae_experiments/1-node_128-gbs/checkpoint/epoch-100-20210727-180344.pt
 model_config=/scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/aae_template.yaml
 static_files="${pdb_file} ${ref_pdb} ${model_weights} ${model_config}"
-echo ${static_files}
 cp ${static_files} /tmp
 
 # Remove recycling

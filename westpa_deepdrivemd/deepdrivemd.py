@@ -333,70 +333,70 @@ if __name__ == "__main__":
 
     args = parse_args()
 
-    import sys
-    import time
-    start = time.time()
+    #import sys
+    #import time
+    #start = time.time()
 
-    sys.stdout = open(args.output_path.with_suffix(".log"), "w")
-    sys.stderr = open(args.output_path.with_suffix(".err"), "w")
-    print(args.top)
-    print(args.coord)
-    sys.stdout.flush()
+    #sys.stdout = open(args.output_path.with_suffix(".log"), "w")
+    #sys.stderr = open(args.output_path.with_suffix(".err"), "w")
+    #print(args.top)
+    #print(args.coord)
+    #sys.stdout.flush()
 
     # Need to create temporary h5 file for AI
     h5_file = args.output_path.with_suffix(".h5")
 
     if args.coord.suffix == ".restrt":
-        print(".restrt file detected")
+        #print(".restrt file detected")
         # HACK: change this to pdb file (which we wrote with amber)
         # since mda can't read the chamber file with the restrt
         args.coord = args.coord.with_suffix(".pdb")
-        print("update coord:", args.coord)
+        #print("update coord:", args.coord)
         rmsds, positions = preprocess_pdb(
             args.coord, args.ref, selection=args.selection
         )
-        print(positions.shape)
-        sys.stdout.flush()
-        traj_time = time.time()
+        #print(positions.shape)
+        #sys.stdout.flush()
+        #traj_time = time.time()
         # TODO: remove temp array
         # a = np.array([[1, 2]])
     else:
-        print("parent:", args.parent)
-        print("nc:", args.coord)
-        sys.stdout.flush()
+        #print("parent:", args.parent)
+        #print("nc:", args.coord)
+        #sys.stdout.flush()
         parent_rmsds, parent_positions = preprocess_pdb(
             args.parent, args.ref, selection=args.selection
         )
-        parent_time = time.time()
-        print("parent preprocess time:", parent_time - start)
-        print("parent:", parent_positions.shape)
-        sys.stdout.flush()
+        #parent_time = time.time()
+        #print("parent preprocess time:", parent_time - start)
+        #print("parent:", parent_positions.shape)
+        #sys.stdout.flush()
         rmsds, positions = preprocess_traj(
-            args.parent, args.ref, args.coord, selection=args.selection, verbose=True
+            args.parent, args.ref, args.coord, selection=args.selection, verbose=False
         )
 
-        traj_time = time.time()
-        print("traj preprocess time:", traj_time - parent_time)
+        #traj_time = time.time()
+        #print("traj preprocess time:", traj_time - parent_time)
 
-        print("positions:", positions.shape)
-        sys.stdout.flush()
+        #print("positions:", positions.shape)
+        #sys.stdout.flush()
         rmsds = np.concatenate([parent_rmsds, rmsds])
         positions = np.concatenate([parent_positions, positions])
-        print("rmsds shape", rmsds.shape)
-        print("rmsds", rmsds)
-        print("parent rmsds", parent_rmsds)
-        print("positions shape", positions.shape)
-        sys.stdout.flush()
+        #print("rmsds shape", rmsds.shape)
+        #print("rmsds", rmsds)
+        #print("parent rmsds", parent_rmsds)
+        #print("positions shape", positions.shape)
+        #sys.stdout.flush()
 
         # TODO: remove temp array
         # a = np.array([[1, 2], [3, 4], [5, 6]])
 
     # Write model input file
     write_h5(h5_file, rmsds, positions)
-    write_time = time.time()
-    print("write h5 time", write_time - traj_time)
-    print("wrote h5")
-    sys.stdout.flush()
+    #write_time = time.time()
+    #print("write h5 time", write_time - traj_time)
+    #print("wrote h5")
+    #sys.stdout.flush()
 
     # Run model in inference
     embeddings = generate_embeddings(
@@ -406,25 +406,25 @@ if __name__ == "__main__":
         inference_batch_size=args.batch_size,
         device=args.device,
     )
-    ai_time = time.time()
-    print("AI time:", ai_time - write_time)
-    print("embeddings:", embeddings.shape)
-    sys.stdout.flush()
+    #ai_time = time.time()
+    #print("AI time:", ai_time - write_time)
+    #print("embeddings:", embeddings.shape)
+    #sys.stdout.flush()
 
     # Take the first pcoord_dim embedding dims to pass to WESTPA
     # binning algorithm
 
     pcoord = embeddings[:, : args.pcoord_dim]
 
-    print("pcoord shape:", pcoord.shape)
-    print("pcoord:", pcoord)
-    sys.stdout.flush()
+    #print("pcoord shape:", pcoord.shape)
+    #print("pcoord:", pcoord)
+    #sys.stdout.flush()
 
     # Can delete H5 file after coordinates have been computed
     h5_file.unlink()
-    print("writing", args.output_path)
+    #print("writing", args.output_path)
     np.savetxt(args.output_path, pcoord, fmt="%.4f")
-    print("total time:", time.time() - start)
-    sys.stdout.flush()
-    sys.stdout.close()
-    sys.stderr.close()
+    #print("total time:", time.time() - start)
+    #sys.stdout.flush()
+    #sys.stdout.close()
+    #sys.stderr.close()
