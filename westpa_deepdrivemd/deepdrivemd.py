@@ -364,6 +364,7 @@ if __name__ == "__main__":
         #print("parent:", args.parent)
         #print("nc:", args.coord)
         #sys.stdout.flush()
+        print("Start preprocess_pdb")
         parent_rmsds, parent_positions = preprocess_pdb(
             args.parent, args.ref, selection=args.selection
         )
@@ -371,6 +372,7 @@ if __name__ == "__main__":
         #print("parent preprocess time:", parent_time - start)
         #print("parent:", parent_positions.shape)
         #sys.stdout.flush()
+        print("Start preprocess_traj")
         rmsds, positions = preprocess_traj(
             args.parent, args.ref, args.coord, selection=args.selection, verbose=False
         )
@@ -380,6 +382,7 @@ if __name__ == "__main__":
 
         #print("positions:", positions.shape)
         #sys.stdout.flush()
+        print("Start concatenate")
         rmsds = np.concatenate([parent_rmsds, rmsds])
         positions = np.concatenate([parent_positions, positions])
         #print("rmsds shape", rmsds.shape)
@@ -391,6 +394,7 @@ if __name__ == "__main__":
         # TODO: remove temp array
         # a = np.array([[1, 2], [3, 4], [5, 6]])
 
+    print("Start write_h5")
     # Write model input file
     write_h5(h5_file, rmsds, positions)
     #write_time = time.time()
@@ -398,6 +402,7 @@ if __name__ == "__main__":
     #print("wrote h5")
     #sys.stdout.flush()
 
+    print("Start generate_embeddings")
     # Run model in inference
     embeddings = generate_embeddings(
         model_cfg_path=args.model_cfg,
@@ -420,11 +425,15 @@ if __name__ == "__main__":
     #print("pcoord:", pcoord)
     #sys.stdout.flush()
 
+    print("Start unlink h5")
     # Can delete H5 file after coordinates have been computed
     h5_file.unlink()
+    print("Start savetxt")
     #print("writing", args.output_path)
     np.savetxt(args.output_path, pcoord, fmt="%.4f")
     #print("total time:", time.time() - start)
     #sys.stdout.flush()
     #sys.stdout.close()
     #sys.stderr.close()
+    print("Done")
+
