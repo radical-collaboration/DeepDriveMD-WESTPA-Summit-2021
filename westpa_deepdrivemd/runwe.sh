@@ -62,7 +62,7 @@ wait
 
 
 # start server
-$WEST_ROOT/bin/w_run --debug --work-manager=zmq --n-workers=0 --zmq-mode=master --zmq-write-host-info=$SERVER_INFO --zmq-comm-mode=tcp &> west-$SLURM_JOBID-local.log &
+$WEST_ROOT/bin/w_run --work-manager=zmq --n-workers=0 --zmq-mode=master --zmq-write-host-info=$SERVER_INFO --zmq-comm-mode=tcp &> west-$SLURM_JOBID-local.log &
 
 # wait on host info file up to 1 min
 for ((n=0; n<60; n++)); do
