@@ -10,10 +10,11 @@ cd $WEST_SIM_ROOT
 RMSD=$(mktemp)
 COM=$(mktemp)
 
-python_path=/scratch/06079/tg853783/ddmd/envs/pytorch.mpi/bin/python
+python_path=/tmp/pytorch/bin/python
+#python_path=/scratch/06079/tg853783/ddmd/envs/pytorch.mpi/bin/python
 pcoord_file=/tmp/$(uuidgen).txt
 
-${python_path} $WEST_SIM_ROOT/deepdrivemd.py \
+${python_path} /tmp/deepdrivemd.py \
   --top /tmp/closed.pdb \
   --coord $WEST_STRUCT_DATA_REF \
   --output_path ${pcoord_file} \

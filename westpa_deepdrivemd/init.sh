@@ -21,8 +21,14 @@ pdb_file=/scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/westpa_deepd
 ref_pdb=/scratch/06079/tg853783/ddmd/data/raw/spike_WE.pdb
 model_weights=/scratch/06079/tg853783/ddmd/runs/ddp_aae_experiments/1-node_128-gbs/checkpoint/epoch-100-20210727-180344.pt
 model_config=/scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/aae_template.yaml
-static_files="${pdb_file} ${ref_pdb} ${model_weights} ${model_config}"
+model_import=/scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/aae_config.py
+deepdrivemd=/scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/westpa_deepdrivemd/deepdrivemd.py
+static_files="${pdb_file} ${ref_pdb} ${model_weights} ${model_config} ${model_import} ${deepdrivemd}"
 cp ${static_files} /tmp
+
+# Use a node local conda environment to prevent stalling
+conda_path=/scratch/06079/tg853783/ddmd/envs/pytorch_cloned_on_tmp.tar
+tar -xf ${conda_path} -C /tmp
 
 # Remove recycling
 $WEST_ROOT/bin/w_init $BSTATE_ARGS --segs-per-state 5 --work-manager=threads "$@"
