@@ -36,7 +36,7 @@ export USE_LOCAL_SCRATCH=1
 
 export WM_ZMQ_MASTER_HEARTBEAT=100
 export WM_ZMQ_WORKER_HEARTBEAT=100
-export WM_ZMQ_TIMEOUT_FACTOR=300
+export WM_ZMQ_TIMEOUT_FACTOR=3000
 export BASH=$SWROOT/bin/bash
 export PERL=$SWROOT/usr/bin/perl
 export ZSH=$SWROOT/bin/zsh

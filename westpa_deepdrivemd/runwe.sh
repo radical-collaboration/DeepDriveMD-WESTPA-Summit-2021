@@ -3,9 +3,9 @@
 #SBATCH -J final-spike-we
 #SBATCH -o final.%j.%N.out
 #SBATCH -e final.%j.%N.err
-#SBATCH -N 12
-#SBATCH -n 48
-#SBATCH -t 01:00:00
+#SBATCH -N 20
+#SBATCH -n 80
+#SBATCH -t 00:25:00
 
 set -x
 cd $SLURM_SUBMIT_DIR
@@ -42,20 +42,27 @@ prod_in=/scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/westpa_deepdr
 ref_pdb=/scratch/06079/tg853783/ddmd/data/raw/spike_WE.pdb
 model_weights=/scratch/06079/tg853783/ddmd/runs/ddp_aae_experiments/1-node_128-gbs/checkpoint/epoch-100-20210727-180344.pt
 model_config=/scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/aae_template.yaml
-static_files="${top_file} ${pdb_file} ${prod_in} ${ref_pdb} ${model_weights} ${model_config}"
+model_import=/scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/ddp_aae_experiments/aae_config.py
+#runseg=/scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/westpa_deepdrivemd/runseg.sh
+deepdrivemd=/scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/westpa_deepdrivemd/deepdrivemd.py
+seg_id=/scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/westpa_deepdrivemd/seg_id.py
+static_files="${top_file} ${pdb_file} ${prod_in} ${ref_pdb} ${model_weights} ${model_config} ${model_import} ${deepdrivemd} ${seg_id}"
 
-# Copy input data to each node's local storage /tmp
-cnt=0
+#conda_path=/scratch/06079/tg853783/ddmd/envs/pytorch.mpi
+conda_path=/scratch/06079/tg853783/ddmd/envs/pytorch_cloned_on_tmp.tar
+
+
+# Copy input data to each node's local storage /tmp and make tmp output dir
+# Need extra /tmp/traj_segs incase node failed to clean up properly
 for i in $(cat nodefilelist.txt)
 do
-    ibrun -n 1 -o $(expr $num_gpu_per_node '*' $cnt) cp ${static_files} /tmp &
-    cnt=$(expr $cnt + 1)
+    ssh ${i} "cp ${static_files} /tmp; rm -r /tmp/traj_segs; mkdir /tmp/traj_segs; tar -xf ${conda_path} -C /tmp" & 
 done
 wait
 
 
 # start server
-$WEST_ROOT/bin/w_run --work-manager=zmq --n-workers=0 --zmq-mode=master --zmq-write-host-info=$SERVER_INFO --zmq-comm-mode=tcp &> west-$SLURM_JOBID-local.log &
+$WEST_ROOT/bin/w_run --debug --work-manager=zmq --n-workers=0 --zmq-mode=master --zmq-write-host-info=$SERVER_INFO --zmq-comm-mode=tcp &> west-$SLURM_JOBID-local.log &
 
 # wait on host info file up to 1 min
 for ((n=0; n<60; n++)); do
