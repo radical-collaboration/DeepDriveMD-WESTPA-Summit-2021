@@ -1,8 +1,9 @@
 module load conda cuda/10.1 gcc/7.3.0
-# OpenMM
-mkdir $SCRATCH/conda
-conda create -p $SCRATCH/conda/openmm python=3.7
-conda activate $SCRATCH/conda/openmm
+# DeepDriveMD with OpenMM
+export ddmd_conda_path=$SCRATCH/ddmd/envs/ddmd
+mkdir -p $ddmd_conda_path
+conda create -p $ddmd_conda_path python=3.7
+conda activate $ddmd_conda_path
 conda install -y -c conda-forge hdf5
 conda install -y scipy pillow
 conda install -y h5py=2.10.0
@@ -10,25 +11,19 @@ conda install -y openmm -c omnia-dev/label/cuda101
 pip install git+https://github.com/braceal/MD-tools.git
 pip install git+https://github.com/braceal/molecules.git
 pip install git+https://github.com/DeepDriveMD/DeepDriveMD-pipeline.git
-pip install git+https://github.com/radical-cybertools/radical.saga@fix/issue_835
+pip install --upgrade git+https://github.com/radical-cybertools/radical.saga
 
-# Pytorch
+# DeepDriveMD with Pytorch
+export ddmd_pytorch_conda_path=$SCRATCH/ddmd/envs/pytorch.mpi
 conda deactivate
-conda create -p $SCRATCH/conda/pytorch python=3.7
-conda activate $SCRATCH/conda/pytorch
+conda create -p $ddmd_pytorch_conda_path python=3.7
+conda activate $ddmd_pytorch_conda_path
 conda install -y pytorch scikit-learn
 conda install openmpi mpi4py
 #h5py 3.2.1 instead of 2.10.0
-HDF5_INCLUDEDIR=$SCRATCH/conda/pytorch/include pip install h5py==3.2.1
+HDF5_INCLUDEDIR=$ddmd_pytorch_conda_path/include pip install h5py==3.2.1
 git clone https://github.com/DeepDriveMD/DeepDriveMD-pipeline.git
 cd DeepDriveMD-pipeline
 cp setup.cfg setup.cfg.bak
 sed -i 's/h5py==2\.10\.0/h5py/g' setup.cfg
 pip install .
-
-# RCT/EnTK
-conda deactivate
-conda create -p $SCRATCH/conda/rct python=3.7
-conda activate $SCRATCH/conda/rct
-pip install git+https://github.com/radical-cybertools/radical.saga@fix/issue_835
-pip install radical.entk
