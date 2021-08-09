@@ -1,6 +1,7 @@
 module load conda cuda/10.1 gcc/7.3.0
+
 # DeepDriveMD with OpenMM
-export ddmd_conda_path=$SCRATCH/ddmd/envs/ddmd
+export ddmd_conda_path=/scratch/06079/tg853783/ddmd/envs/ddmd
 mkdir -p $ddmd_conda_path
 conda create -p $ddmd_conda_path python=3.7
 conda activate $ddmd_conda_path
@@ -14,7 +15,7 @@ pip install git+https://github.com/DeepDriveMD/DeepDriveMD-pipeline.git
 pip install --upgrade git+https://github.com/radical-cybertools/radical.saga
 
 # DeepDriveMD with Pytorch
-export ddmd_pytorch_conda_path=$SCRATCH/ddmd/envs/pytorch.mpi
+export ddmd_pytorch_conda_path=/scratch/06079/tg853783/ddmd/envs/pytorch.mpi
 conda deactivate
 conda create -p $ddmd_pytorch_conda_path python=3.7
 conda activate $ddmd_pytorch_conda_path
@@ -27,3 +28,9 @@ cd DeepDriveMD-pipeline
 cp setup.cfg setup.cfg.bak
 sed -i 's/h5py==2\.10\.0/h5py/g' setup.cfg
 pip install .
+
+# WESTPA
+export westpa_conda_path=/scratch/06079/tg853783/ddmd/envs/westpa
+conda deactivate
+conda create -p $westpa_conda_path python=3.8.10
+conda install -c conda-forge westpa
