@@ -8,7 +8,7 @@ max_iteration: 2
 cpus_per_node: 10
 gpus_per_node: 4
 hardware_threads_per_cpu: 4
-experiment_directory: /scratch/06079/tg853783/ddmd/runs/spike_waterbox_with_spike_WE_structure
+experiment_directory: /scratch/06079/tg853783/ddmd/runs/spike_waterbox_with_spike_WE_structure_120gpu
 node_local_path: null
 molecular_dynamics_stage:
     pre_exec: 
@@ -27,7 +27,7 @@ molecular_dynamics_stage:
         process_type: null
         threads_per_process: 1
         thread_type: null
-    num_tasks: 12
+    num_tasks: 120
     task_config:
         experiment_directory: set_by_deepdrivemd
         stage_idx: 0
