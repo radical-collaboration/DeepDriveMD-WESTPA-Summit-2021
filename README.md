@@ -25,9 +25,11 @@ rmsd                     Dataset {130880}
 ```
 
 # Environments
-The conda environment for running DeepDriveMD and the AAE training in offline mode can be found here: `/scratch/06079/tg853783/ddmd/envs/ddmd`
+The conda environments for running DeepDriveMD and the AAE training in offline mode can be found here:
+* DeepDriveMD: `/scratch/06079/tg853783/ddmd/envs/ddmd`
+* PyTorch for AAE training: `/scratch/06079/tg853783/ddmd/envs/pytorch.mpi`
 
-To load the environment:
+To load the DeepDriveMD environment:
 ```
 module load conda
 conda activate /scratch/06079/tg853783/ddmd/envs/ddmd
@@ -111,9 +113,16 @@ Note, `n_jobs=-1` allows scikit-learn to use all available processors.
 
 ***
 
-### DeepDriveMD
+### DeepDriveMD Workflow
 
-TODO
+To run the DeepDriveMD workflow with a template for a particular system structure, invoke `python` in the following way with the example of Spike protein solvated in a water box. This command replaces sbatch with a slurm job script as RADICAL Cybertools manage the job submission internally.:
+```
+module load conda
+conda activate /scratch/06079/tg853783/ddmd/envs/ddmd
+python -m deepdrivemd.deepdrivemd --config /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/template/spike_waterbox_template.yaml
+```
+
+Note, `experiment_directory` in the YAML template MUST not exist prior invoking the DeepDriveMD workflow, it will create automatically when it's started. This is where all outputs are stored from the workflow including OpenMM simulation, preprocessing, training and outlier detection.
 
 ***
 
