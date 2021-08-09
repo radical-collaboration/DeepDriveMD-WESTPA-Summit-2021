@@ -124,7 +124,7 @@ conda activate /scratch/06079/tg853783/ddmd/envs/ddmd
 python -m deepdrivemd.deepdrivemd --config /scratch/06079/tg853783/ddmd/src/DeepDriveMD-Longhorn-2021/template/spike_waterbox_template.yaml
 ```
 
-Note, `experiment_directory` in the YAML template MUST not exist prior invoking the DeepDriveMD workflow, it will create automatically when it's started. This is where all outputs are stored from the workflow including OpenMM simulation, preprocessing, training and outlier detection.
+Note, `experiment_directory` in the YAML template MUST not exist prior invoking the DeepDriveMD workflow, it will create automatically when it's started. This is where all outputs are stored from each run of the workflow including OpenMM simulation, preprocessing, training and outlier detection.
 
 ***
 
