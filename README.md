@@ -30,6 +30,7 @@ rmsd                     Dataset {130880}
 The conda environments for running DeepDriveMD and the AAE training in offline mode can be found here:
 * DeepDriveMD: `/scratch/06079/tg853783/ddmd/envs/ddmd`
 * PyTorch for AAE training: `/scratch/06079/tg853783/ddmd/envs/pytorch.mpi`
+* WESTPA: `/scratch/06079/tg853783/ddmd/envs/westpa`
 
 To load the DeepDriveMD environment:
 ```
