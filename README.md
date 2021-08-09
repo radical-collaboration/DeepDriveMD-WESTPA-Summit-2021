@@ -35,10 +35,10 @@ module load conda
 conda activate /scratch/06079/tg853783/ddmd/envs/ddmd
 ```
 
-To reproduce the creation of this environment please see: `env_recipe.txt`
+To reproduce the creation of these environments, please see: `env_recipe.txt`
 
-### Radical EnTK
-Environment variables can be configured by running: 
+### Environment Variables for RADICAL EnTK
+To run the DeepDriveMD workflow, the environment variables can be configured by running: 
 ```
 source ~/.radical/auth
 ```
