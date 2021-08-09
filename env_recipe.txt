@@ -33,4 +33,5 @@ pip install .
 export westpa_conda_path=/scratch/06079/tg853783/ddmd/envs/westpa
 conda deactivate
 conda create -p $westpa_conda_path python=3.8.10
+conda activate $westpa_conda_path
 conda install -c conda-forge westpa
