@@ -1,5 +1,5 @@
 # DeepDriveMD-Longhorn-2021
-Scripts, configs, results, documentation, and analysis of DeepDriveMD experiments run on Longhorn in 2021
+Scripts, configs, results, documentation, and analysis of DeepDriveMD experiments run on Longhorn in 2021.
 
 Everything related to the experiment is stored here `/scratch/06079/tg853783/ddmd` on Longhorn with a group permission to read/write by `G-822428`.
 
