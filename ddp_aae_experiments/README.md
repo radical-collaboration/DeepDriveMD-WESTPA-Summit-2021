@@ -1,5 +1,28 @@
 # DDP experiments for the Adversarial Autoencoder (AAE) model.
 
+# Data
+We benchmark the Adversarial Autoencoder (AAE) model on the spike protein simulations from WESTPA which 
+we have collected on Longhorn here: `/scratch/06079/tg853783/ddmd/data/raw`
+
+The data is 94GB in total, this includes 1 PDB file and 32 DCD files.
+```
+$ du -h /scratch/06079/tg853783/ddmd/data/raw/
+94G	/scratch/06079/tg853783/ddmd/data/raw/
+```
+
+Please reach out to our team by posting an issue in the [DeepDriveMD](https://github.com/DeepDriveMD/DeepDriveMD-pipeline) repository in case you need access to the original dataset.
+
+The prepreprocessed data can be found here: `/scratch/06079/tg853783/ddmd/data/preprocessed/spike-all-AAE.h5` or recomputed with the preprocessing script (see below).
+
+The dataset contains 130880 frames of MD data which can be used to train the AAE:
+```
+h5ls /scratch/06079/tg853783/ddmd/data/preprocessed/spike-all-AAE.h5
+point_cloud              Dataset {130880, 3, 3375}
+rmsd                     Dataset {130880}
+```
+
+# Experiments
+
 Our scaling study measures AAE training performance for the following scanarios:
 
 | Nodes       | GPUs        | Global Batch Size |
