@@ -54,10 +54,6 @@ ls
 # each line in these files corresponds to a frame of the trajcetory
 # This shape is defined in west.cfg
 
-#python_path=/scratch/06079/tg853783/ddmd/envs/pytorch.mpi/bin/python
-#pcoord_file=$(uuidgen).txt
-# No longer need uuid since each output directory is unique
-#pcoord_file=pcoord.txt
 ambpdb -p /tmp/closed.prmtop -c ./parent.restrt > ./parent.pdb
 
 ls
@@ -88,5 +84,5 @@ rm ./prod.in ./pcoord.txt ./parent.pdb
 #mkdir -pv $WEST_CURRENT_SEG_DATA_REF
 #mv * $WEST_CURRENT_SEG_DATA_REF
 
-# Instead of moving data here, move data in post_iter.sh
+# Instead of moving data here, move data in post_iter_gather.sh
 
