@@ -1,7 +1,7 @@
-# DeepDriveMD-Longhorn-2021
-Scripts, configs, results, documentation, and analysis of DeepDriveMD experiments run on Longhorn in 2021.
+# DeepDriveMD-WESTPA-Summit-2021
+Scripts, configs, results, documentation, and analysis of DeepDriveMD experiments run on Summit in 2021.
 
-Everything related to the experiment is stored here `/scratch/06079/tg853783/ddmd` on Longhorn with a group permission to read/write by `G-822428`.
+~~Everything related to the experiment is stored here `/scratch/06079/tg853783/ddmd` on Longhorn with a group permission to read/write by `G-822428`.~~
 
 Please reach out to our team by posting an issue in the [DeepDriveMD](https://github.com/DeepDriveMD/DeepDriveMD-pipeline) in case you need access to the shared path.
 
@@ -65,7 +65,7 @@ others.
 
 ### Training & Inference
 
-Please see this [README](https://github.com/DeepDriveMD/DeepDriveMD-Longhorn-2021/blob/main/ddp_aae_experiments/README.md).
+~~Please see this [README](https://github.com/DeepDriveMD/DeepDriveMD-Longhorn-2021/blob/main/ddp_aae_experiments/README.md).~~
 
 ***
 
