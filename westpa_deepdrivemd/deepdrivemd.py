@@ -11,6 +11,7 @@ from molecules.ml.datasets import PointCloudDataset
 from molecules.ml.unsupervised.point_autoencoder import AAE3dHyperparams
 from molecules.ml.unsupervised.point_autoencoder.aae import Encoder
 from aae_config import AAEModelConfig
+import time
 
 PathLike = Union[str, Path]
 
@@ -364,7 +365,8 @@ if __name__ == "__main__":
         #print("parent:", args.parent)
         #print("nc:", args.coord)
         #sys.stdout.flush()
-        print("Start preprocess_pdb")
+        s1 = time.time()
+        print("Start preprocess_pdb,{},{}".format(s1, 0))
         parent_rmsds, parent_positions = preprocess_pdb(
             args.parent, args.ref, selection=args.selection
         )
@@ -372,7 +374,8 @@ if __name__ == "__main__":
         #print("parent preprocess time:", parent_time - start)
         #print("parent:", parent_positions.shape)
         #sys.stdout.flush()
-        print("Start preprocess_traj")
+        s2 = time.time()
+        print("Start preprocess_traj,{},{}".format(s2, s2-s1))
         rmsds, positions = preprocess_traj(
             args.parent, args.ref, args.coord, selection=args.selection, verbose=False
         )
@@ -382,7 +385,8 @@ if __name__ == "__main__":
 
         #print("positions:", positions.shape)
         #sys.stdout.flush()
-        print("Start concatenate")
+        s3 = time.time()
+        print("Start concatenate,{},{}".format(s3, s3-s2))
         rmsds = np.concatenate([parent_rmsds, rmsds])
         positions = np.concatenate([parent_positions, positions])
         #print("rmsds shape", rmsds.shape)
@@ -394,7 +398,8 @@ if __name__ == "__main__":
         # TODO: remove temp array
         # a = np.array([[1, 2], [3, 4], [5, 6]])
 
-    print("Start write_h5")
+    s4 = time.time()
+    print("Start write_h5,{},{}".format(s4, s4-s3))
     # Write model input file
     write_h5(h5_file, rmsds, positions)
     #write_time = time.time()
@@ -402,7 +407,8 @@ if __name__ == "__main__":
     #print("wrote h5")
     #sys.stdout.flush()
 
-    print("Start generate_embeddings")
+    s5 = time.time()
+    print("Start generate_embeddings,{},{}".format(s5, s5-s4))
     # Run model in inference
     embeddings = generate_embeddings(
         model_cfg_path=args.model_cfg,
@@ -425,15 +431,18 @@ if __name__ == "__main__":
     #print("pcoord:", pcoord)
     #sys.stdout.flush()
 
-    print("Start unlink h5")
+    s6 = time.time()
+    print("Start unlink h5,{},{}".format(s6, s6-s5))
     # Can delete H5 file after coordinates have been computed
     h5_file.unlink()
-    print("Start savetxt")
+    s7 = time.time()
+    print("Start savetxt,{},{}".format(s7, s7-s6))
     #print("writing", args.output_path)
     np.savetxt(args.output_path, pcoord, fmt="%.4f")
     #print("total time:", time.time() - start)
     #sys.stdout.flush()
     #sys.stdout.close()
     #sys.stderr.close()
-    print("Done")
+    s8 = time.time()
+    print("Done,{},{}".format(s8, s8-s7))
 

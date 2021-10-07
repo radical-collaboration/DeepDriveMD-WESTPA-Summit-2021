@@ -5,7 +5,7 @@ if [ -n "$SEG_DEBUG" ] ; then
   env | sort
 fi
 
-ls /tmp
+ls /tmp/pytorch -al
 #python_path=/scratch/06079/tg853783/ddmd/envs/pytorch.mpi/bin/python
 python_path=/tmp/pytorch/bin/python
 #python_path=/tmp/pytorch.mpi/bin/python
@@ -41,6 +41,12 @@ echo "RUNSEG.SH: CUDA_VISIBLE_DEVICES = " $CUDA_VISIBLE_DEVICES
 pwd
 ls
 
+. /sw/summit/lmod/8.4/init/bash
+source  /sw/summit/lmod/8.4/init/profile
+
+module load gcc/7.5.0
+
+
 # Runs dynamics
 $PMEMD -O -p /tmp/closed.prmtop -i ./prod.in -c ./parent.restrt -o ./seg.out -inf ./seg.nfo -l ./seg.log -x ./seg.nc -r ./seg.restrt || exit 1
 
@@ -58,6 +64,10 @@ ambpdb -p /tmp/closed.prmtop -c ./parent.restrt > ./parent.pdb
 
 ls
 
+. /sw/summit/lmod/8.4/init/bash
+module load hdf5
+module load spectrum-mpi
+
 ${python_path} /tmp/deepdrivemd.py  \
   --top /tmp/closed.pdb \
   --coord ./seg.nc \
@@ -73,13 +83,15 @@ ${python_path} /tmp/deepdrivemd.py  \
 
 echo "Finished analysis, cleaning up ..."
 
+ls 
+
 cat ./pcoord.txt > $WEST_PCOORD_RETURN
 
 #mv seg_nosolvent.nc seg.nc
 #rm -f prod.in closed.prmtop closed.pdb spike_WE.pdb aae_template.yaml epoch-100-20210727-180344.pt #analysis.cpptraj
 
 # Remove temporary files
-rm ./prod.in ./pcoord.txt ./parent.pdb
+#rm ./prod.in ./pcoord.txt ./parent.pdb
 # Move data from node local to file system
 #mkdir -pv $WEST_CURRENT_SEG_DATA_REF
 #mv * $WEST_CURRENT_SEG_DATA_REF

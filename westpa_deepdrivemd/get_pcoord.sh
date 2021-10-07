@@ -10,8 +10,9 @@ cd $WEST_SIM_ROOT
 RMSD=$(mktemp)
 COM=$(mktemp)
 
+module load hdf5
+python_path=/gpfs/alpine/world-shared/bip216/ddmd_westpa/envs/pytorch/bin/python
 python_path=/tmp/pytorch/bin/python
-#python_path=/scratch/06079/tg853783/ddmd/envs/pytorch.mpi/bin/python
 pcoord_file=/tmp/$(uuidgen).txt
 
 ${python_path} /tmp/deepdrivemd.py \

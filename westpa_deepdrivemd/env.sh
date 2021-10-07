@@ -1,23 +1,28 @@
 # This file defines where WEST and GROMACS can be found
 # Modify to taste
-source ~/.profile
+source ~/.bash_profile
+
+
 export MY_SPECTRUM_OPTIONS="--gpu"
 export PATH=$PATH:$HOME/bin
-export WEST_ROOT=/scratch/06079/tg853783/ddmd/envs/westpa/westpa-2020.03
-source /scratch/06079/tg853783/ddmd/envs/westpa/westpa-2020.03/westpa.sh
-alias python='/scratch/06079/tg853783/ddmd/envs/westpa/bin/python'
-module load launcher-gpu
-module load cuda/10.1
-module use /scratch/apps/modulefiles
+export WEST_ROOT=/gpfs/alpine/world-shared/bip216/ddmd_westpa/envs/westpa/westpa-2020.05/
+source /gpfs/alpine/world-shared/bip216/ddmd_westpa/envs/westpa/westpa-2020.05/westpa.sh
+alias python='/gpfs/alpine/world-shared/bip216/ddmd_westpa/envs/westpa/bin/python'
+module load cuda/10.1.243
+#module use /scratch/apps/modulefiles
 #module load amber/18.0
-module load gcc/7.3.0 mvapich2-gdr/2.3.4 amber/20.0
-module load conda
-conda activate /scratch/06079/tg853783/ddmd/envs/westpa
+module load gcc/7.5.0 #mvapich2-gdr/2.3.4 #amber/20.0
+#module load conda
+. "/sw/summit/python/3.7/anaconda3/5.3.0/etc/profile.d/conda.sh"
+conda activate /gpfs/alpine/world-shared/bip216/ddmd_westpa/envs/westpa
+
+source /gpfs/alpine/scratch/hrlee/bip216/amber20/amber.sh
+
 #conda activate westpa-2020.02
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 # export PATH=$(echo $PATH | sed -e 's|///home/07392/tsztainp/:||g')
-export PYTHONPATH=/scratch/06079/tg853783/ddmd/envs/westpa/bin/python
-export WEST_PYTHON=/scratch/06079/tg853783/ddmd/envs/westpa/bin/python
+export PYTHONPATH=/gpfs/alpine/world-shared/bip216/ddmd_westpa/envs/westpa/bin/python
+export WEST_PYTHON=/gpfs/alpine/world-shared/bip216/ddmd_westpa/envs/westpa/bin/python
 # Inform WEST where to find Python and our other scripts where to find WEST
 if [[ -z "$WEST_ROOT" ]]; then
     echo "Must set environ variable WEST_ROOT"
