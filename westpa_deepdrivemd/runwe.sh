@@ -4,7 +4,7 @@
 #BSUB -J final-spike-we
 #BSUB -o final.%J.out
 #BSUB -e final.%J.err
-#BSUB -nnodes 255
+#BSUB -nnodes 1020
 #BSUB -alloc_flags gpumps
 #BSUB -alloc_flags smt4
 #BSUB -W 01:10
