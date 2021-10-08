@@ -1,13 +1,13 @@
 #!/bin/bash
 #BSUB -P BIP216
-#BSUB -q debug
+#BSUB -q batch
 #BSUB -J final-spike-we
 #BSUB -o final.%J.out
 #BSUB -e final.%J.err
-#BSUB -nnodes 4
+#BSUB -nnodes 255
 #BSUB -alloc_flags gpumps
 #BSUB -alloc_flags smt4
-#BSUB -W 00:45
+#BSUB -W 01:10
 
 set -x
 #export LS_SUBCWD=/gpfs/alpine/world-shared/bip216/ddmd_westpa/src/DeepDriveMD-WESTPA-Summit-2021/westpa_deepdrivemd

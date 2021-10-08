@@ -347,6 +347,8 @@ if __name__ == "__main__":
     # Need to create temporary h5 file for AI
     h5_file = args.output_path.with_suffix(".h5")
 
+    s1 = s2 = s3 = 0
+
     if args.coord.suffix == ".restrt":
         #print(".restrt file detected")
         # HACK: change this to pdb file (which we wrote with amber)

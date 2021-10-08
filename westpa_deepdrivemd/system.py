@@ -35,7 +35,7 @@ class SDASystem(WESTSystem):
         )
 
         # Number of walkers (trajectories) per bin
-        self.bin_target_counts[...] = 8 # 1
+        self.bin_target_counts[...] = 680# 1
         # set to 1 for testing try 2 if it breaks. number of target trajs per bin.. 
         # 1 walker per bin means fewer trajectories. 8
 
@@ -72,5 +72,5 @@ class SDASystem(WESTSystem):
                                              dtype=numpy.int)
 
 #       Number of walkers per bin
-        self.bin_target_counts[...] = 1 
+        self.bin_target_counts[...] = 680
         # set to 1 for testing try 2 if it breaks. number of target trajs per bin.. 1 walker per bin means fewer trajectories. 8

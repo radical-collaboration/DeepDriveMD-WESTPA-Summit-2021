@@ -13,7 +13,7 @@ mkdir -p ${output_dir}
 # to the file system. Do this for each node in parallel.
 for i in $(cat nodefilelist.txt)
 do
-    ssh ${i} "cd /tmp; tar -czf ${i}.tar.gz traj_segs/*; mv ${i}.tar.gz ${output_dir}; rm -r /tmp/traj_segs/*" &
+    ssh ${i} "cd /tmp; tar -cf ${i}.tar traj_segs/*; mv ${i}.tar ${output_dir}; rm -r /tmp/traj_segs/*" &
 done
 wait
 
@@ -24,8 +24,8 @@ cd ${output_dir}
 for i in $(cat $WEST_SIM_ROOT/nodefilelist.txt)
 do
    mkdir ${output_dir}/${i}
-   tar -xzf ${i}.tar.gz -C ${output_dir}/${i}
+   tar -xf ${i}.tar -C ${output_dir}/${i}
    mv ${output_dir}/${i}/traj_segs/* ${output_dir}
-   rm -r ${output_dir}/${i} ${i}.tar.gz
+   rm -r ${output_dir}/${i} ${i}.tar
 done
 
